@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 using namespace std;
+
 class book {
 public:
   int id = 0;
@@ -46,6 +47,7 @@ private:
   string input_store;
 };
 
+// Main class for the Library
 class Library {
 public:
   void library_intro();

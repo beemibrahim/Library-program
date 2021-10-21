@@ -4,6 +4,7 @@ void Library_MainPart() {
   Library library;
   library.library_intro();
   for (;;) {
+    printf("\n");
     library.command = library.input.GetInput(library.books);
     if (library.command.worked == false) {
       continue;

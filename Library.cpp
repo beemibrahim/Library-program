@@ -8,6 +8,7 @@ Command UserInput::GetInput(vector<book> books) {
   bool if_evry_zero = true;
   cout << "Type your command:";
   getline(cin, this->input_store);
+  cout << endl;
   Remove_All_Spaces();
   string input = this->input_store;
 
@@ -16,10 +17,13 @@ Command UserInput::GetInput(vector<book> books) {
     command.command_type = 2;
     cout << "Name:";
     getline(cin, command.name);
+    cout << endl;
     cout << "Author:";
     getline(cin, command.author);
+    cout << endl;
     cout << "pages:";
     getline(cin, pages);
+    cout << endl;
 
     for (int i = 0; i < pages.size(); i++) {
       if (pages[i] < 47 || pages[i] > 58) {
@@ -70,7 +74,7 @@ Command UserInput::GetInput(vector<book> books) {
       if (pages[i] > 48 && pages[i] < 58) {
         if_evry_zero = false;
       }
-      if (if_evry_zero == true && i == pages.size() - 1 && pages[i] == 0) {
+      if (if_evry_zero == true && i == pages.size() - 1 && pages[i] == '0') {
         int chance = (rand() % 100);
         if (chance >= 0 && chance <= 10) {
           printf("LOL how are gonna read this book with no pages");
@@ -748,15 +752,15 @@ void Library::find_everything() {
   }
   for (int i = 0; i < this->books.size(); i++) {
     printf("%d.", number);
-    printf("\n");
+    printf("\n \n");
     printf("Id : %d", this->books[i].id);
-    printf("\n");
+    printf("\n \n");
     printf("Name : %s", this->books[i].name.c_str());
-    printf("\n");
+    printf("\n \n");
     printf("Author : %s", this->books[i].author.c_str());
-    printf("\n");
+    printf("\n \n");
     printf("Pages : %d", this->books[i].pages);
-    printf("\n");
+    printf("\n \n");
     number++;
   }
 }
@@ -783,7 +787,6 @@ void Library::delete_() {
   }
   this->books = booky;
 }
-
 void Library::find() {
   bool valid = true;
   int number = 1;
@@ -818,16 +821,20 @@ void Library::find() {
     }
     if (valid == true) {
       printf("%d.", number);
-      printf("\n");
+      printf("\n \n");
       printf("Id : %d", books[i].id);
-      printf("\n");
+      printf("\n \n");
       printf("Name : %s", books[i].name.c_str());
-      printf("\n");
+      printf("\n \n");
       printf("Author : %s", books[i].author.c_str());
-      printf("\n");
+      printf("\n \n");
       printf("Pages : %d", books[i].pages);
-      printf("\n");
+      printf("\n \n");
       number++;
+    }
+    if (valid == false) {
+      printf("There is no book matching those conditions");
+      printf("\n \n");
     }
   }
 }

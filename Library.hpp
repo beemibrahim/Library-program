@@ -22,18 +22,18 @@ public:
   // delete book = 6
   int command_type = 0;
   string command;
-  bool id_gon;
-  bool name_gon;
-  bool author_gon;
-  bool page_gon;
+  bool id_gon = false;
+  bool name_gon = false;
+  bool author_gon = false;
+  bool page_gon = false;
   int id = 0;
   string name;
   string author;
   int pages = 0;
   // Only for update
-  bool name2;
-  bool author2;
-  bool pages2;
+  bool name2 = false;
+  bool author2 = false;
+  bool pages2 = false;
 };
 
 class UserInput {

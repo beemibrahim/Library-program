@@ -2,24 +2,26 @@
 #ifndef _LIBRARY_LIBRARY_MANAGER_
 #define _LIBRARY_LIBRARY_MANAGER_
 #include "Book.hpp"
+#include <unordered_map>
 #include <vector>
 
-class LibraryManager {
+class LibraryService {
 private:
-  std::vector<Book *> m_books;
+  std::unordered_map<int, Book *> m_books;
   bool validate(const Book &book);
+  friend class LibraryServiceTests;
 
 public:
-  Book *create_book(const Book &book);
+  const Book *create_book(const Book &book);
 
-  Book *find_book(int id);
-  std::vector<Book *> *find_all_books(const std::string &name = "",
-                                      const std::string &author = "",
-                                      int pages = -1);
+  const Book *find_book(unsigned const int &id);
+  const std::unordered_map<int, Book *> *
+  find_all_books(const std::string &name = "", const std::string &author = "",
+                 unsigned const int &pages = 0);
 
-  Book *update_book(int id, const Book &book);
+  const Book *update_book(unsigned const int &id, const Book &book);
 
-  void delete_book(int id);
+  void delete_book(unsigned const int &id);
   void delete_all_books();
 };
 

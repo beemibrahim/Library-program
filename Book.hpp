@@ -6,10 +6,10 @@
 
 class Book {
 public:
-  int id = 0;
+  unsigned int id = 0;
   std::string name;
   std::string author;
-  int pages = 0;
+  unsigned int pages = 0;
 };
 
 #endif // _LIBRARY_BOOK_

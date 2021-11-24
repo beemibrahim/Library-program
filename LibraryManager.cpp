@@ -6,8 +6,12 @@ const Book *LibraryService::create_book(const Book &book) {
   if (!validate(book)) {
     return nullptr;
   }
+  if (dupchk(book)) {
+    return nullptr;
+  }
   Book booky = book;
   Book *bookyf = &booky;
+  m_books[bookyf->id] = bookyf;
   return bookyf;
 }
 
@@ -63,6 +67,7 @@ const Book *LibraryService::update_book(unsigned const int &id,
   if (!validate(book)) {
     return nullptr;
   }
+  m_books[id] = (Book *)ptr;
   return (const Book *)ptr;
 }
 
@@ -105,4 +110,13 @@ void LibraryService::delete_book(unsigned const int &id) {
 }
 void LibraryService::delete_all_books() {
   m_books.erase(m_books.begin(), m_books.end());
+}
+
+bool LibraryService::dupchk(const Book &book) {
+  for (int i = 0; i < m_books.size(); i++) {
+    if (m_books[i]->name == book.name && m_books[i]->author == book.author) {
+      return true;
+    }
+  }
+  return false;
 }

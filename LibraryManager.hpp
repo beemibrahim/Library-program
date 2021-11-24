@@ -15,6 +15,7 @@ public:
   const Book *create_book(const Book &book);
 
   const Book *find_book(unsigned const int &id);
+  bool dupchk(const Book &book);
   const std::unordered_map<int, Book *> *
   find_all_books(const std::string &name = "", const std::string &author = "",
                  unsigned const int &pages = 0);

@@ -6,7 +6,6 @@
 
 class Book {
 public:
-  unsigned int id = 0;
   std::string name;
   std::string author;
   unsigned int pages = 0;

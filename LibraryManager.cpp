@@ -9,9 +9,10 @@ const Book *LibraryService::create_book(const Book &book) {
   if (dupchk(book)) {
     return nullptr;
   }
-  Book booky = book;
-  Book *bookyf = &booky;
-  m_books[bookyf->id] = bookyf;
+  const Book *booky = &book;
+  Book *bookyf = (Book *)booky;
+  m_books[this->last_id + 1] = bookyf;
+  ++this->last_id;
   return bookyf;
 }
 
@@ -19,18 +20,19 @@ const Book *LibraryService::find_book(unsigned const int &id) {
   if (m_books.count(id) == 0) {
     return nullptr;
   }
-  return m_books[id];
+  int d = id;
+  return m_books[d];
 }
 
-const std::unordered_map<int, Book *> *
+const std::unordered_map<int, Book *>
 LibraryService::find_all_books(const std::string &name,
                                const std::string &author,
                                unsigned const int &pages) {
-  unordered_map<int, Book *> *answer;
+  unordered_map<int, Book *> answer;
   int count = 0;
-  int valid = 0;
   unordered_map<int, Book *>::iterator it = m_books.begin();
   for (; it != m_books.end(); it++) {
+    int valid = 0;
     if (name == "") {
       valid++;
     } else if (name == it->second->name) {
@@ -49,7 +51,7 @@ LibraryService::find_all_books(const std::string &name,
       valid++;
     }
     if (valid == 3) {
-      (*answer)[count] = it->second;
+      answer[count] = it->second;
       count++;
     }
   }
@@ -71,7 +73,7 @@ const Book *LibraryService::update_book(unsigned const int &id,
   return (const Book *)ptr;
 }
 
-bool validate(const Book &book) {
+bool LibraryService::validate(const Book &book) {
   if (book.name.size() == 0) {
     return false;
   }
@@ -113,8 +115,9 @@ void LibraryService::delete_all_books() {
 }
 
 bool LibraryService::dupchk(const Book &book) {
-  for (int i = 0; i < m_books.size(); i++) {
-    if (m_books[i]->name == book.name && m_books[i]->author == book.author) {
+  unordered_map<int, Book *>::iterator it = m_books.begin();
+  for (; it != m_books.end(); it++) {
+    if (it->second->name == book.name && it->second->author == book.author) {
       return true;
     }
   }

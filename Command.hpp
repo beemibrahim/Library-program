@@ -2,8 +2,17 @@
 
 using nlohmann::json;
 class Command {
+public:
+  // create = 1
+  // delete = 2
+  // deleteall = 3
+  // DeleteCond = 4
+  // findid = 5
+  // findAll = 6
+  // findCond = 7
+  // Update = 8
   int type;
-  bool fail;
+  bool fail = false;
   int id;
   json command;
 };

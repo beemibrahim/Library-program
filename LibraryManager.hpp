@@ -23,6 +23,11 @@ public:
   const Book *update_book(unsigned const int &id, const Book &book);
 
   void delete_book(unsigned const int &id);
+
+  void delete_condition(const std::string &name = "",
+                        const std::string &author = "",
+                        unsigned const int &pages = 0);
+
   void delete_all_books();
 };
 

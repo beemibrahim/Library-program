@@ -123,3 +123,36 @@ bool LibraryService::dupchk(const Book &book) {
   }
   return false;
 }
+
+void LibraryService::delete_condition(const std::string &name,
+                                      const std::string &author,
+                                      unsigned const int &pages) {
+  unordered_map<int, Book *>::iterator it = m_books.begin();
+  for (; it != m_books.end();) {
+    int valid = 0;
+    if (name == "") {
+      valid++;
+    } else if (name == it->second->name) {
+      valid++;
+    }
+
+    if (author == "") {
+      valid++;
+    } else if (author == it->second->author) {
+      valid++;
+    }
+
+    if (pages == 0) {
+      valid++;
+    } else if (pages == it->second->pages) {
+      valid++;
+    }
+    if (valid == 3) {
+      int erase = it->first;
+      it++;
+      m_books.erase(erase);
+      continue;
+    }
+    it++;
+  }
+}

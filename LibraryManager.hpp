@@ -6,13 +6,12 @@
 #include <vector>
 
 class LibraryService {
-private:
+public:
   int last_id = 0;
   std::unordered_map<int, Book *> m_books;
   bool validate(const Book &book);
   friend class LibraryServiceTests;
 
-public:
   const Book *create_book(const Book &book);
 
   const Book *find_book(unsigned const int &id);

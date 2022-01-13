@@ -1,61 +1,93 @@
+#include "LibraryManager.hpp"
+#include <gtest/gtest.h>
+/*
+ // create tests
 
-#include "LibraryManagerTests.hpp"
 
-bool LibraryServiceTests::Test_Creating_a_book() {
+  bool Test_Creating_a_book();
+  bool Test_Creating_Invalid_book_With_No_pages();
+  bool Test_Creating_Invalid_book_With_No_Name();
+  bool Test_Creating_Invalid_book_With_No_Author();
+  bool Test_Creating_Invalid_book_With_No_Letters_In_Author();
+
+
+  // delete tests
+
+
+  bool Test_Deleting_a_book();
+  bool Test_Deleting_All_books();
+  bool Test_Deleting_Nonexistent_book();
+
+
+  // update tests
+
+
+
+  bool Test_Updating_a_book();
+  bool Test_Updating_Invalid_book_With_No_pages();
+  bool Test_Updating_Invalid_book_With_No_Name();
+  bool Test_Updating_Invalid_book_With_No_Author();
+  bool Test_Updating_Invalid_book_With_No_Letters_In_Author();
+  bool Test_Updating_Nonexistent_id();
+
+
+  // find tests
+
+  bool Test_Find_Book();
+  bool Test_Finding_Nonexistent_book();
+
+
+  // find_all_tests
+
+  bool Test_Finding_No_match();
+  bool Test_Finding_All_Books();
+  bool Test_Finding_No_Names_Cond();
+  bool Test_Finding_No_Author_Cond();
+  bool Test_Finding_No_Page_Cond();
+  bool Test_Finding_No_Names_and_Author_Cond();
+  bool Test_Finding_No_Names_and_Page_Cond();
+  bool Test_Finding_No_Author_and_Pages_Cond();
+
+*/
+
+TEST(CreateTests, NormalCreate) {
   LibraryService major_test_subject1;
   Book minor_test_subject1;
   minor_test_subject1.name = "How To Be Cool";
   minor_test_subject1.author = "ibrahim usmani";
   minor_test_subject1.pages = 24;
   major_test_subject1.create_book(minor_test_subject1);
-  if (major_test_subject1.m_books.count(1) == 0) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(1, major_test_subject1.m_books.count(1));
 }
 
-bool LibraryServiceTests::Test_Creating_Invalid_book_With_No_pages() {
+TEST(CreateTests, CreateInvalid_No_Pages) {
   LibraryService major_test_subject1;
   Book minor_test_subject1;
   minor_test_subject1.name = "How To Be Cool";
   minor_test_subject1.author = "ibrahim usmani";
   minor_test_subject1.pages = 0;
-  if (major_test_subject1.create_book(minor_test_subject1) != nullptr) {
-    return false;
-  }
-
-  return true;
+  EXPECT_EQ(nullptr, major_test_subject1.create_book(minor_test_subject1));
 }
 
-bool LibraryServiceTests::Test_Creating_Invalid_book_With_No_Name() {
+TEST(CreateTests, CreateInvalid_No_Name) {
   LibraryService major_test_subject1;
   Book minor_test_subject1;
   minor_test_subject1.name = "";
   minor_test_subject1.author = "ibrahim usmani";
   minor_test_subject1.pages = 24;
-  if (major_test_subject1.create_book(minor_test_subject1) != nullptr) {
-    return false;
-  }
-
-  return true;
+  EXPECT_EQ(nullptr, major_test_subject1.create_book(minor_test_subject1));
 }
 
-bool LibraryServiceTests::Test_Creating_Invalid_book_With_No_Author() {
+TEST(CreateTests, CreateInvalid_No_Author) {
   LibraryService major_test_subject1;
   Book minor_test_subject1;
   minor_test_subject1.name = "How To Be Cool";
   minor_test_subject1.author = "";
   minor_test_subject1.pages = 24;
-
-  if (major_test_subject1.create_book(minor_test_subject1) != nullptr) {
-    return false;
-  }
-
-  return true;
+  EXPECT_EQ(nullptr, major_test_subject1.create_book(minor_test_subject1));
 }
 
-bool LibraryServiceTests::
-    Test_Creating_Invalid_book_With_No_Letters_In_Author() {
+TEST(CreateTests, Create_NoLetters_Author) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -63,14 +95,10 @@ bool LibraryServiceTests::
   minor_test_subject1.author = "4@391 / ?./ ";
   minor_test_subject1.pages = 24;
   // Check if not failed to create
-  if (major_test_subject1.create_book(minor_test_subject1) != nullptr) {
-    return false;
-  }
+  EXPECT_EQ(nullptr, major_test_subject1.create_book(minor_test_subject1));
+}
 
-  return true;
-};
-
-bool LibraryServiceTests::Test_Deleting_a_book() {
+TEST(DeleteTests, NormalDelete) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -80,13 +108,10 @@ bool LibraryServiceTests::Test_Deleting_a_book() {
   major_test_subject1.create_book(minor_test_subject1);
   // Deleting book
   major_test_subject1.delete_book(1);
-  if (major_test_subject1.m_books.size() != 0) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(0, major_test_subject1.m_books.size());
+}
 
-bool LibraryServiceTests::Test_Deleting_All_books() {
+TEST(DeleteTests, DeleteAll) {
   LibraryService major_test_subject1;
   // Creating Book 1
   Book minor_test_subject1;
@@ -108,13 +133,10 @@ bool LibraryServiceTests::Test_Deleting_All_books() {
   major_test_subject1.create_book(minor_test_subject3);
   // Deleting all books
   major_test_subject1.delete_all_books();
-  if (major_test_subject1.m_books.size() != 0) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(0, major_test_subject1.m_books.size());
 }
 
-bool LibraryServiceTests::Test_Deleting_Nonexistent_book() {
+TEST(DeleteTests, Delete_Nonexist) {
   LibraryService major_test_subject1;
   // Creating Book 1
   Book minor_test_subject1;
@@ -137,13 +159,10 @@ bool LibraryServiceTests::Test_Deleting_Nonexistent_book() {
   auto tmp = major_test_subject1.m_books;
   // Deleting Nonexistent book test
   major_test_subject1.delete_book(4);
-  if (major_test_subject1.m_books != tmp) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(tmp, major_test_subject1.m_books);
 }
 
-bool LibraryServiceTests::Test_Updating_a_book() {
+TEST(UpdateTests, NormalUpdate) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -159,13 +178,10 @@ bool LibraryServiceTests::Test_Updating_a_book() {
   Book *major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
   major_test_subject1.update_book(1, major_test_subject2);
-  if (major_test_subject1.m_books[1] != major_test_subject3) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(major_test_subject3, major_test_subject1.m_books[1]);
 }
 
-bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_pages() {
+TEST(UpdateTests, UpdateInvalid_Nopages) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -182,13 +198,10 @@ bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_pages() {
   Book *major_test_subject3;
   major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
-  if (major_test_subject1.update_book(1, major_test_subject2) != nullptr) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(nullptr, major_test_subject1.update_book(1, major_test_subject2));
+}
 
-bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_Name() {
+TEST(UpdateTests, UpdateInvalid_NoName) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -205,13 +218,10 @@ bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_Name() {
   Book *major_test_subject3;
   major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
-  if (major_test_subject1.update_book(1, major_test_subject2) != nullptr) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(nullptr, major_test_subject1.update_book(1, major_test_subject2));
+}
 
-bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_Author() {
+TEST(UpdateTests, UpdateInvalid_NoAuthor) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -228,14 +238,10 @@ bool LibraryServiceTests::Test_Updating_Invalid_book_With_No_Author() {
   Book *major_test_subject3;
   major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
-  if (major_test_subject1.update_book(1, major_test_subject2) != nullptr) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(nullptr, major_test_subject1.update_book(1, major_test_subject2));
+}
 
-bool LibraryServiceTests::
-    Test_Updating_Invalid_book_With_No_Letters_In_Author() {
+TEST(UpdateTests, UpdateInvalid_NoLetters_author) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -252,13 +258,10 @@ bool LibraryServiceTests::
   Book *major_test_subject3;
   major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
-  if (major_test_subject1.update_book(1, major_test_subject2) != nullptr) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(nullptr, major_test_subject1.update_book(1, major_test_subject2));
+}
 
-bool LibraryServiceTests::Test_Updating_Nonexistent_id() {
+TEST(UpdateTests, UpdateNon_ExisID) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -275,13 +278,10 @@ bool LibraryServiceTests::Test_Updating_Nonexistent_id() {
   Book *major_test_subject3;
   major_test_subject3 = &minor_test_subject2;
   // Updating book to updated book
-  if (major_test_subject1.update_book(5, minor_test_subject2) != nullptr) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(nullptr, major_test_subject1.update_book(5, minor_test_subject2));
+}
 
-bool LibraryServiceTests::Test_Finding_Nonexistent_book() {
+TEST(FindTests, NormalFind) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -290,13 +290,10 @@ bool LibraryServiceTests::Test_Finding_Nonexistent_book() {
   minor_test_subject1.pages = 24;
   major_test_subject1.create_book(minor_test_subject1);
   // Finding Non Existent Book
-  if (major_test_subject1.find_book(4) != nullptr) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(&minor_test_subject1, major_test_subject1.find_book(1));
 }
 
-bool LibraryServiceTests::Test_Find_Book() {
+TEST(FindTests, FindNonExis_Book) {
   LibraryService major_test_subject1;
   // Creating book
   Book minor_test_subject1;
@@ -305,43 +302,10 @@ bool LibraryServiceTests::Test_Find_Book() {
   minor_test_subject1.pages = 24;
   major_test_subject1.create_book(minor_test_subject1);
   // Finding Non Existent Book
-  if (major_test_subject1.find_book(1) != &minor_test_subject1) {
-    return false;
-  }
-  return true;
+  EXPECT_EQ(nullptr, major_test_subject1.find_book(4));
 }
 
-bool LibraryServiceTests::Test_Finding_Conditions_with_nopages() {
-  LibraryService major_test_subject1;
-  // Creating book 1
-  Book minor_test_subject1;
-  minor_test_subject1.name = "How To Be Cool";
-  minor_test_subject1.author = "Ibrahim Muhmud Usmani";
-  minor_test_subject1.pages = 24;
-  major_test_subject1.create_book(minor_test_subject1);
-  // Creating Book 2
-  Book minor_test_subject2;
-  minor_test_subject1.name = "How To Be More Cool";
-  minor_test_subject1.author = "Ibrahim Usmani";
-  minor_test_subject1.pages = 45;
-  major_test_subject1.create_book(minor_test_subject2);
-  // Creating Book 3
-  Book minor_test_subject3;
-  minor_test_subject1.name = "How To Be Even More Cool";
-  minor_test_subject1.author = "Ibrahim Muhmud Usmani";
-  minor_test_subject1.pages = 24;
-  major_test_subject1.create_book(minor_test_subject3);
-  // Finding Conditions (Invalid Ofc)
-  if (major_test_subject1
-          .find_all_books("How To Be Cool", "Ibrahim Muhmud Usmani", -1)
-          .size() != 0) {
-    return false;
-  }
-
-  return true;
-};
-
-bool LibraryServiceTests::Test_Finding_No_match() {
+TEST(FindCond_Tests, Find_NoMatch) {
   LibraryService major_test_subject1;
   // Creating book 1
   Book minor_test_subject1;
@@ -372,14 +336,11 @@ bool LibraryServiceTests::Test_Finding_No_match() {
   minor_test_subject5.author = "Forevr";
   minor_test_subject5.pages = 8;
   // Finding No Test_Finding_No_match
-  if (major_test_subject1.find_all_books("coooool", "Foerev", 424).size() !=
-      0) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(
+      0, major_test_subject1.find_all_books("coooool", "Foerev", 424).size());
+}
 
-bool LibraryServiceTests::Test_Finding_All_Books() {
+TEST(FindCond_Tests, FindAll) {
   // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
@@ -412,13 +373,10 @@ bool LibraryServiceTests::Test_Finding_All_Books() {
   minor_test_subject5.pages = 8;
   major_test_subject1.create_book(minor_test_subject5);
   // Testing Finding_all_books
-  if (major_test_subject1.find_all_books("", "", 0).size() != 5) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(5, major_test_subject1.find_all_books("", "", 0).size());
+}
 
-bool LibraryServiceTests::Test_Finding_No_Names_Cond() {
+TEST(FindCond_Tests, Find_NoName_Cond) {
   // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
@@ -451,13 +409,10 @@ bool LibraryServiceTests::Test_Finding_No_Names_Cond() {
   minor_test_subject5.pages = 18;
   major_test_subject1.create_book(minor_test_subject5);
   // Testing Finding_all_books
-  if (major_test_subject1.find_all_books("", "Beem", 18).size() != 5) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(5, major_test_subject1.find_all_books("", "Beem", 18).size());
+}
 
-bool LibraryServiceTests::Test_Finding_No_Author_Cond() {
+TEST(FindCond_Tests, Find_NoAuthor_Cond) {
   // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
@@ -490,28 +445,24 @@ bool LibraryServiceTests::Test_Finding_No_Author_Cond() {
   minor_test_subject5.pages = 18;
   major_test_subject1.create_book(minor_test_subject5);
   // Testing
-  if (major_test_subject1.find_all_books("Reality be like", "", 18).size() !=
-      5) {
-    return false;
-  }
-  return true;
-};
-bool LibraryServiceTests::Test_Finding_No_Page_Cond() {
-  // Creating book 1
-  LibraryService major_test_subject1;
-  Book minor_test_subject1;
-  minor_test_subject1.name = "Funy";
-  minor_test_subject1.author = "CooL";
-  minor_test_subject1.pages = 181;
-  major_test_subject1.create_book(minor_test_subject1);
-  // Testing
-  if (major_test_subject1.find_all_books("Funy", "CooL", 181).size() != 1) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(
+      5, major_test_subject1.find_all_books("Reality be like", "", 18).size());
+}
 
-bool LibraryServiceTests::Test_Finding_No_Names_and_Author_Cond() {
+TEST(FindCond_Tests, Find_NoPage_Cond) {
+  LibraryService major_test_subject1;
+  // Creating book 1
+  Book minor_test_subject1;
+  minor_test_subject1.name = "How To Be Cool";
+  minor_test_subject1.author = "Ibrahim Muhmud Usmani";
+  minor_test_subject1.pages = 24;
+  major_test_subject1.create_book(minor_test_subject1);
+  EXPECT_EQ(1, major_test_subject1
+                   .find_all_books("How To Be Cool", "Ibrahim Muhmud Usmani", 0)
+                   .size());
+}
+
+TEST(FindCond_Tests, Find_NoName_Author_Cond) {
   // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
@@ -544,12 +495,10 @@ bool LibraryServiceTests::Test_Finding_No_Names_and_Author_Cond() {
   minor_test_subject5.pages = 666;
   major_test_subject1.create_book(minor_test_subject5);
   // Testing
-  if (major_test_subject1.find_all_books("", "", 666).size() != 5) {
-    return false;
-  }
-  return true;
-};
-bool LibraryServiceTests::Test_Finding_No_Names_and_Page_Cond() {
+  EXPECT_EQ(5, major_test_subject1.find_all_books("", "", 666).size());
+}
+
+TEST(FindCond_Tests, No_Name_Page_Cond) {
   // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
@@ -581,16 +530,11 @@ bool LibraryServiceTests::Test_Finding_No_Names_and_Page_Cond() {
   minor_test_subject5.author = "A normal person";
   minor_test_subject5.pages = 8;
   major_test_subject1.create_book(minor_test_subject5);
+  EXPECT_EQ(
+      5, major_test_subject1.find_all_books("", "A normal person", 0).size());
+}
 
-  // Testing
-  if (major_test_subject1.find_all_books("", "A normal person", 0).size() !=
-      5) {
-    return false;
-  }
-  return true;
-};
-bool LibraryServiceTests::Test_Finding_No_Author_and_Pages_Cond() {
-  // Creating book 1
+TEST(FindCond_Tests, Find_No_Author_Page_Cond) { // Creating book 1
   LibraryService major_test_subject1;
   Book minor_test_subject1;
   minor_test_subject1.name = "Funy";
@@ -622,25 +566,7 @@ bool LibraryServiceTests::Test_Finding_No_Author_and_Pages_Cond() {
   minor_test_subject5.author = "Forevr";
   minor_test_subject5.pages = 8;
   major_test_subject1.create_book(minor_test_subject5);
-  // Testing
-  if (major_test_subject1.find_all_books("Funy", "", 0).size() != 5) {
-    return false;
-  }
-  return true;
-};
-bool LibraryServiceTests::Test_Finding_With_No_Letters_In_Author() {
-  LibraryService major_test_subject1;
-  // Creating book 1
-  Book minor_test_subject1;
-  minor_test_subject1.name = "Funy";
-  minor_test_subject1.author = "Lolster";
-  minor_test_subject1.pages = 69;
-  major_test_subject1.create_book(minor_test_subject1);
-  // testing
-  if (major_test_subject1.find_all_books("Funy", "1232*$", 69).size() != 0) {
-    return false;
-  }
-  return true;
-};
+  EXPECT_EQ(5, major_test_subject1.find_all_books("Funy", "", 0).size());
+}
 
 // 75648884

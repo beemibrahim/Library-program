@@ -4,7 +4,7 @@ using nlohmann::json;
 class Command {
 public:
   // create = 1
-  // delete = 2
+  // deleteid = 2
   // deleteall = 3
   // DeleteCond = 4
   // findid = 5
@@ -15,4 +15,5 @@ public:
   bool fail = false;
   int id;
   json command;
+  std::vector<std::string> error_log;
 };

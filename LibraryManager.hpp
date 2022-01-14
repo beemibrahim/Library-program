@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
 class LibraryService {
 public:
   int last_id = 0;

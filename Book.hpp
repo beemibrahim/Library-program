@@ -1,7 +1,7 @@
 
 #ifndef _LIBRARY_BOOK_
 #define _LIBRARY_BOOK_
-#include "Library.hpp"
+
 #include <string>
 
 class Book {

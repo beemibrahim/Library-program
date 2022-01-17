@@ -1,10 +1,24 @@
 #include "LibraryApp.hpp"
 
 void LibraryApp::runLibrary() {
+  bool tru = false;
 
   for (;;) {
+    this->userinput = UserInput();
+    std::cout.flush();
+    if (tru == true) {
+      Book *book = services.m_books[1];
+      tru = false;
+      tru = true;
+    }
 
     userinput.GetInput();
+    if (tru == true) {
+      Book *book = services.m_books[1];
+      tru = false;
+      tru = true;
+    }
+
     Command command = userinput.ParseInput();
 
     if (command.fail) {
@@ -18,6 +32,28 @@ void LibraryApp::runLibrary() {
       }
       cout << "Command Failed , read my REAMDE.md on github : "
               "https://github.com/beemibrahim/Library-program\n\n";
+      continue;
+    }
+
+    if (command.type == 5) {
+      if (services.find_book(command.id) == nullptr) {
+        cout << "\n             Log :             \n\r";
+        cout << "-----------------------------------\n\r";
+
+        cout << ". ";
+        cout << "That Id doesnt Exist\n\r";
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n\r";
+        continue;
+      }
+      cout << "\n             Book :             \n\r";
+      cout << "-----------------------------------\n\r";
+      Book *book = services.m_books[1];
+      Book *found = (Book *)services.find_book(command.id);
+      cout << "name : " << found->name << "\n\n";
+      cout << "author : " << found->author << "\n\n";
+      cout << "pages : " << found->pages << "\n\n";
+      cout << "id : " << command.id << "\n\n\n\r";
       continue;
     }
 
@@ -77,6 +113,8 @@ void LibraryApp::runLibrary() {
       createe.pages = command.command["pages"];
       services.create_book(createe);
       cout << "Book Successfully Created \n\n\r";
+      Book *book = services.m_books[1];
+      tru = true;
       continue;
     }
 
@@ -90,9 +128,6 @@ void LibraryApp::runLibrary() {
       }
       services.m_books.erase(command.id);
       cout << "Book Successfully Deleted \n\n\r";
-    }
-
-    if (command.type == 5) {
     }
   }
 }

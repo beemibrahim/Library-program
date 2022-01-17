@@ -12,6 +12,7 @@ const Book *LibraryService::create_book(const Book &book) {
   const Book *booky = &book;
   Book *bookyf = (Book *)booky;
   m_books[this->last_id + 1] = bookyf;
+  Book *cool = m_books[this->last_id + 1];
   ++this->last_id;
   return bookyf;
 }
@@ -21,7 +22,8 @@ const Book *LibraryService::find_book(unsigned const int &id) {
     return nullptr;
   }
   int d = id;
-  return m_books[d];
+  Book *booky = m_books[d];
+  return booky;
 }
 
 const std::unordered_map<int, Book *>

@@ -171,6 +171,11 @@ Command UserInput::ParseInput() {
     return command;
   }
 
+  if (input == "find") {
+    command.type = 6;
+    return command;
+  }
+
   if (input[0] == 'f' && input[1] == 'i' && input[2] == 'n' &&
       input[3] == 'd' && input.substr(input.size() - 4) == "json") {
     command.type = 7;
@@ -247,11 +252,6 @@ Command UserInput::ParseInput() {
     return command;
   }
 
-  if (input == "find") {
-    command.type = 6;
-    return command;
-  }
-
   if (input[0] == 'u' && input[1] == 'p' && input[2] == 'd' &&
       input[3] == 'a' && input[4] == 't' && input[5] == 'e' &&
       input.substr(input.size() - 4) == "json") {
@@ -314,30 +314,35 @@ Command UserInput::ParseInput() {
       return command;
     }
     // Are The Pages Non Zero , is the name/author empty ??
-    if (command.command["pages"] == 0 || command.command["name"] == "" ||
+    if (command.command["pages"] < 0) {
+      command.error_log.push_back("Pages are negative");
+      command.fail = true;
+      return command;
+    }
+    if (command.command["pages"] == 0 && command.command["name"] == "" &&
         command.command["author"] == "") {
       command.fail = true;
-      command.error_log.push_back(
-          "Files book propeties for empty / page number is zero");
+      command.error_log.push_back("Cannot update it to itself");
 
       return command;
     }
     string author = command.command["author"];
-
-    // Are there Letters In Author ??
-    bool fail = true;
-    for (int i = 0; i < author.size(); i++) {
-      if ((author[i] > 96 && author[i] < 123) ||
-          (author[i] > 64 && author[i] < 91)) {
-        fail = false;
+    if (author != "") {
+      // Are there Letters In Author ??
+      bool fail = true;
+      for (int i = 0; i < author.size(); i++) {
+        if ((author[i] > 96 && author[i] < 123) ||
+            (author[i] > 64 && author[i] < 91)) {
+          fail = false;
+        }
       }
-    }
-    if (fail == true) {
-      command.fail = true;
-      command.error_log.push_back(
-          "The Author must at least have one letter to be valid");
+      if (fail == true) {
+        command.fail = true;
+        command.error_log.push_back(
+            "The Author must at least have one letter to be valid");
 
-      return command;
+        return command;
+      }
     }
     return command;
   }

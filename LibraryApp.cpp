@@ -38,7 +38,7 @@ void LibraryApp::runLibrary() {
         continue;
       }
       cout << "\n             Books :             \n\r";
-      cout << "-----------------------------------\n\r";
+      cout << "-----------------------------------\n\n\r";
       int num = 1;
       for (; it != services.m_books.end(); it++) {
         cout << num << "."
@@ -48,11 +48,9 @@ void LibraryApp::runLibrary() {
         cout << "author : " << book->author << "\n\n";
         cout << "pages : " << book->pages << "\n\n";
         cout << "id : " << it->first << "\n\n\n\r";
-        continue;
 
         num += 1;
       }
-      cout << "\n\n\n\r";
       continue;
     }
 
@@ -68,7 +66,7 @@ void LibraryApp::runLibrary() {
         continue;
       }
       cout << "\n             Book :             \n\r";
-      cout << "-----------------------------------\n\r";
+      cout << "-----------------------------------\n\n\r";
       Book *book = services.m_books[1];
       Book *found = (Book *)services.find_book(command.id);
       cout << "name : " << found->name << "\n\n";
@@ -77,7 +75,42 @@ void LibraryApp::runLibrary() {
       cout << "id : " << command.id << "\n\n\n\r";
       continue;
     }
+    if (command.type == 7) {
+      unordered_map<int, Book *> arra = services.find_all_books(
+          command.command["name"], command.command["author"],
+          command.command["pages"]);
+      if (arra.size() == 0) {
+        cout << "\n             Log :             \n\r";
+        cout << "-----------------------------------\n\r";
 
+        cout << ". ";
+        cout << "No Book meets those conditions\n\r";
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n\r";
+        continue;
+      }
+
+      unordered_map<int, Book *>::iterator it = arra.begin();
+      cout << "\n             Books :             \n\r";
+      cout << "-----------------------------------\n\n\r";
+
+      int num = 1;
+      for (; it != arra.end(); it++) {
+        cout << num << "."
+             << "\n\n\r";
+        Book *book = arra[it->first];
+        cout << "name : " << book->name << "\n\n";
+        cout << "author : " << book->author << "\n\n";
+        cout << "pages : " << book->pages << "\n\n";
+        cout << "id : " << it->first << "\n\n\n\r";
+
+        num += 1;
+      }
+      continue;
+    }
+
+    if (command.type == 8) {
+    }
     if (command.type == 4) {
       string input = string();
       cout << "Are You Sure About This ( " << services.m_books.size()
@@ -133,8 +166,14 @@ void LibraryApp::runLibrary() {
       createe.author = command.command["author"];
       createe.pages = command.command["pages"];
       retr = (Book *)services.create_book(createe);
+      if (retr == nullptr) {
+        cout << ". "
+             << "Book is either a duplicate or invalid\n\r";
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n";
+        continue;
+      }
       cout << "Book Successfully Created \n\n\r";
-      Book *book = services.m_books[1];
       tru = true;
       continue;
     }

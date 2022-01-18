@@ -2,22 +2,12 @@
 
 void LibraryApp::runLibrary() {
   bool tru = false;
-
+  Book *retr;
   for (;;) {
     this->userinput = UserInput();
     std::cout.flush();
-    if (tru == true) {
-      Book *book = services.m_books[1];
-      tru = false;
-      tru = true;
-    }
 
     userinput.GetInput();
-    if (tru == true) {
-      Book *book = services.m_books[1];
-      tru = false;
-      tru = true;
-    }
 
     Command command = userinput.ParseInput();
 
@@ -32,6 +22,37 @@ void LibraryApp::runLibrary() {
       }
       cout << "Command Failed , read my REAMDE.md on github : "
               "https://github.com/beemibrahim/Library-program\n\n";
+      continue;
+    }
+
+    if (command.type == 6) {
+      unordered_map<int, Book *>::iterator it = services.m_books.begin();
+      if (services.m_books.size() == 0) {
+        cout << "\n             Log :             \n\r";
+        cout << "-----------------------------------\n\r";
+
+        cout << ". ";
+        cout << "No Books are created\n\r";
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n\r";
+        continue;
+      }
+      cout << "\n             Books :             \n\r";
+      cout << "-----------------------------------\n\r";
+      int num = 1;
+      for (; it != services.m_books.end(); it++) {
+        cout << num << "."
+             << "\n\n\r";
+        Book *book = services.m_books[it->first];
+        cout << "name : " << book->name << "\n\n";
+        cout << "author : " << book->author << "\n\n";
+        cout << "pages : " << book->pages << "\n\n";
+        cout << "id : " << it->first << "\n\n\n\r";
+        continue;
+
+        num += 1;
+      }
+      cout << "\n\n\n\r";
       continue;
     }
 
@@ -111,7 +132,7 @@ void LibraryApp::runLibrary() {
       createe.name = command.command["name"];
       createe.author = command.command["author"];
       createe.pages = command.command["pages"];
-      services.create_book(createe);
+      retr = (Book *)services.create_book(createe);
       cout << "Book Successfully Created \n\n\r";
       Book *book = services.m_books[1];
       tru = true;

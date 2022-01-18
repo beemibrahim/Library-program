@@ -9,12 +9,13 @@ const Book *LibraryService::create_book(const Book &book) {
   if (dupchk(book)) {
     return nullptr;
   }
-  const Book *booky = &book;
-  Book *bookyf = (Book *)booky;
-  m_books[this->last_id + 1] = bookyf;
-  Book *cool = m_books[this->last_id + 1];
+  Book *bookt = new Book;
+  bookt->name = book.name;
+  bookt->author = book.author;
+  bookt->pages = book.pages;
+  m_books[this->last_id + 1] = bookt;
   ++this->last_id;
-  return bookyf;
+  return bookt;
 }
 
 const Book *LibraryService::find_book(unsigned const int &id) {
@@ -62,17 +63,39 @@ LibraryService::find_all_books(const std::string &name,
 
 const Book *LibraryService::update_book(unsigned const int &id,
                                         const Book &book) {
-  void *ptr = (Book *)find_book(id);
-  if (ptr == nullptr) {
+  Book extr = *m_books[id];
+  if (m_books.count(id) == 0) {
     return nullptr;
   }
 
-  ptr = (Book *)&book;
-  if (!validate(book)) {
+  if (book.name != "") {
+    extr.name = book.name;
+  }
+  if (book.author != "") {
+    extr.author = book.author;
+  }
+  if (book.pages > 0) {
+    extr.pages = book.pages;
+  }
+
+  if (!validate(extr)) {
     return nullptr;
   }
-  m_books[id] = (Book *)ptr;
-  return (const Book *)ptr;
+  if (dupchk_upd(extr, id)) {
+    return nullptr;
+  }
+
+  if (book.name != "") {
+    m_books[id]->name = book.name;
+  }
+  if (book.author != "") {
+    m_books[id]->author = book.author;
+  }
+  if (book.pages > 0) {
+    m_books[id]->pages = book.pages;
+  }
+
+  return m_books[id];
 }
 
 bool LibraryService::validate(const Book &book) {
@@ -110,9 +133,16 @@ void LibraryService::delete_book(unsigned const int &id) {
   if (m_books.count(id) == 0) {
     return;
   }
+  delete m_books[id];
   m_books.erase(id);
 }
 void LibraryService::delete_all_books() {
+  unordered_map<int, Book *>::iterator it = m_books.begin();
+
+  for (; it != m_books.end(); it++) {
+    delete m_books[it->first];
+  }
+
   m_books.erase(m_books.begin(), m_books.end());
 }
 
@@ -152,9 +182,27 @@ void LibraryService::delete_condition(const std::string &name,
     if (valid == 3) {
       int erase = it->first;
       it++;
+      delete m_books[it->first];
       m_books.erase(erase);
       continue;
     }
     it++;
   }
+}
+
+bool LibraryService::dupchk_upd(const Book &book, int id) {
+  if (m_books.count(id) == 0) {
+    return false;
+  }
+
+  unordered_map<int, Book *>::iterator it = m_books.begin();
+  for (; it != m_books.end(); it++) {
+    if (it->first == id) {
+      continue;
+    }
+    if (it->second->name == book.name && it->second->author == book.author) {
+      return true;
+    }
+  }
+  return false;
 }

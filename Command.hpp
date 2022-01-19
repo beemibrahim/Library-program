@@ -11,6 +11,7 @@ public:
   // findAll = 6
   // findCond = 7
   // Update = 8
+  // Patch = 9
   int type;
   bool fail = false;
   int id;

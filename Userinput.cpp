@@ -319,30 +319,28 @@ Command UserInput::ParseInput() {
       command.fail = true;
       return command;
     }
-    if (command.command["pages"] == 0 && command.command["name"] == "" &&
+    if (command.command["pages"] == 0 || command.command["name"] == "" ||
         command.command["author"] == "") {
       command.fail = true;
-      command.error_log.push_back("Cannot update it to itself");
+      command.error_log.push_back("Book Propeties are empty");
 
       return command;
     }
     string author = command.command["author"];
-    if (author != "") {
-      // Are there Letters In Author ??
-      bool fail = true;
-      for (int i = 0; i < author.size(); i++) {
-        if ((author[i] > 96 && author[i] < 123) ||
-            (author[i] > 64 && author[i] < 91)) {
-          fail = false;
-        }
+    // Are there Letters In Author ??
+    bool fail = true;
+    for (int i = 0; i < author.size(); i++) {
+      if ((author[i] > 96 && author[i] < 123) ||
+          (author[i] > 64 && author[i] < 91)) {
+        fail = false;
       }
-      if (fail == true) {
-        command.fail = true;
-        command.error_log.push_back(
-            "The Author must at least have one letter to be valid");
+    }
+    if (fail == true) {
+      command.fail = true;
+      command.error_log.push_back(
+          "The Author must at least have one letter to be valid");
 
-        return command;
-      }
+      return command;
     }
     return command;
   }

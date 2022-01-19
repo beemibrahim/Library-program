@@ -61,8 +61,8 @@ LibraryService::find_all_books(const std::string &name,
   return answer;
 }
 
-const Book *LibraryService::update_book(unsigned const int &id,
-                                        const Book &book) {
+const Book *LibraryService::patch_book(unsigned const int &id,
+                                       const Book &book) {
   Book extr = *m_books[id];
   if (m_books.count(id) == 0) {
     return nullptr;
@@ -94,6 +94,26 @@ const Book *LibraryService::update_book(unsigned const int &id,
   if (book.pages > 0) {
     m_books[id]->pages = book.pages;
   }
+
+  return m_books[id];
+}
+
+const Book *LibraryService::update_book(unsigned const int &id,
+                                        const Book &book) {
+  if (m_books.count(id) == 0) {
+    return nullptr;
+  }
+
+  if (!validate(book)) {
+    return nullptr;
+  }
+  if (dupchk_upd(book, id)) {
+    return nullptr;
+  }
+
+  m_books[id]->name = book.name;
+  m_books[id]->author = book.author;
+  m_books[id]->pages = book.pages;
 
   return m_books[id];
 }

@@ -24,6 +24,7 @@ public:
                  unsigned const int &pages = 0);
 
   const Book *update_book(unsigned const int &id, const Book &book);
+  const Book *patch_book(unsigned const int &id, const Book &book);
 
   void delete_book(unsigned const int &id);
 

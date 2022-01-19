@@ -177,8 +177,12 @@ TEST(UpdateTests, NormalUpdate) {
   major_test_subject2.pages = 26;
   Book *major_test_subject3 = &major_test_subject2;
   // Updating book to updated book
-  major_test_subject1.update_book(1, major_test_subject2);
-  EXPECT_EQ(major_test_subject3, major_test_subject1.m_books[1]);
+  const Book *ans = major_test_subject1.update_book(1, major_test_subject2);
+  const Book *answ = major_test_subject1.m_books[1];
+  EXPECT_EQ(major_test_subject3->name, major_test_subject1.m_books[1]->name);
+  EXPECT_EQ(major_test_subject3->author,
+            major_test_subject1.m_books[1]->author);
+  EXPECT_EQ(major_test_subject3->pages, major_test_subject1.m_books[1]->pages);
 }
 
 TEST(UpdateTests, UpdateInvalid_Nopages) {
@@ -289,8 +293,11 @@ TEST(FindTests, NormalFind) {
   minor_test_subject1.author = "Ibrahim Muhmud Usmani";
   minor_test_subject1.pages = 24;
   major_test_subject1.create_book(minor_test_subject1);
-  // Finding Non Existent Book
-  EXPECT_EQ(&minor_test_subject1, major_test_subject1.find_book(1));
+  // Finding
+  EXPECT_EQ(minor_test_subject1.name, major_test_subject1.find_book(1)->name);
+  EXPECT_EQ(minor_test_subject1.author,
+            major_test_subject1.find_book(1)->author);
+  EXPECT_EQ(minor_test_subject1.pages, major_test_subject1.find_book(1)->pages);
 }
 
 TEST(FindTests, FindNonExis_Book) {

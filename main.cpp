@@ -1,7 +1,6 @@
 #include "Library.hpp"
 
 #include <string>
-#include <vector>
 
 void Library_MainPart() {
   Library library;

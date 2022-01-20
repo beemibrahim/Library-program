@@ -3,7 +3,6 @@
 #define _LIBRARY_BOOK_
 
 #include <string>
-
 class Book {
 public:
   std::string name;

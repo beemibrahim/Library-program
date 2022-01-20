@@ -1,13 +1,15 @@
-
-
 #include "LibraryManager.hpp"
-
-const Book *LibraryService::create_book(const Book &book) {
+LibSev LibraryService::create_book(const Book &book) {
+  LibSev exi;
   if (!validate(book)) {
-    return nullptr;
+    exi.error_log.push_back("Book is invalid");
+    exi.func = true;
+    return exi;
   }
   if (dupchk(book)) {
-    return nullptr;
+    exi.error_log.push_back("Book is a duplicate");
+    exi.func = true;
+    return exi;
   }
   Book *bookt = new Book;
   bookt->name = book.name;
@@ -15,7 +17,8 @@ const Book *LibraryService::create_book(const Book &book) {
   bookt->pages = book.pages;
   m_books[this->last_id + 1] = bookt;
   ++this->last_id;
-  return bookt;
+  exi.ret = bookt;
+  return exi;
 }
 
 const Book *LibraryService::find_book(unsigned const int &id) {
@@ -61,11 +64,14 @@ LibraryService::find_all_books(const std::string &name,
   return answer;
 }
 
-const Book *LibraryService::patch_book(unsigned const int &id,
-                                       const Book &book) {
+LibSev LibraryService::patch_book(unsigned const int &id, const Book &book) {
+  LibSev exi;
+
   Book extr = *m_books[id];
   if (m_books.count(id) == 0) {
-    return nullptr;
+    exi.error_log.push_back("Id doesnt exist");
+    exi.func = true;
+    return exi;
   }
 
   if (book.name != "") {
@@ -79,10 +85,14 @@ const Book *LibraryService::patch_book(unsigned const int &id,
   }
 
   if (!validate(extr)) {
-    return nullptr;
+    exi.error_log.push_back("Book is invalid");
+    exi.func = true;
+    return exi;
   }
   if (dupchk_upd(extr, id)) {
-    return nullptr;
+    exi.error_log.push_back("Book is a duplicate");
+    exi.func = true;
+    return exi;
   }
 
   if (book.name != "") {
@@ -98,17 +108,24 @@ const Book *LibraryService::patch_book(unsigned const int &id,
   return m_books[id];
 }
 
-const Book *LibraryService::update_book(unsigned const int &id,
-                                        const Book &book) {
+LibSev LibraryService::update_book(unsigned const int &id, const Book &book) {
+  LibSev exi;
+
   if (m_books.count(id) == 0) {
-    return nullptr;
+    exi.error_log.push_back("Id doesnt exist");
+    exi.func = true;
+    return exi;
   }
 
   if (!validate(book)) {
-    return nullptr;
+    exi.error_log.push_back("Book is invalid");
+    exi.func = true;
+    return exi;
   }
   if (dupchk_upd(book, id)) {
-    return nullptr;
+    exi.error_log.push_back("Book is a duplicate");
+    exi.func = true;
+    return exi;
   }
 
   m_books[id]->name = book.name;
@@ -149,12 +166,13 @@ bool LibraryService::validate(const Book &book) {
   return true;
 }
 
-void LibraryService::delete_book(unsigned const int &id) {
+bool LibraryService::delete_book(unsigned const int &id) {
   if (m_books.count(id) == 0) {
-    return;
+    return false;
   }
   delete m_books[id];
   m_books.erase(id);
+  return true;
 }
 void LibraryService::delete_all_books() {
   unordered_map<int, Book *>::iterator it = m_books.begin();

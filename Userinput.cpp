@@ -91,12 +91,22 @@ Command UserInput::ParseInput() {
 
   if (input == "delete") {
     command.type = 3;
-    return command;
+    cout << "Are You Sure About This [Y/n]";
+    getline(cin, input);
+    cout << "\n\r";
+    if (input == "Y") {
+      return command;
+    }
+    if (input != "Y") {
+      command.warning_log.push_back("Delete Aborted");
+      return command;
+    }
   }
 
   if (input[0] == 'd' && input[1] == 'e' && input[2] == 'l' &&
       input[3] == 'e' && input[4] == 't' && input[5] == 'e' &&
       input.substr(input.size() - 4) == "json") {
+
     command.type = 4;
     string sub = input.substr(6);
     fstream jsonfile;
@@ -303,6 +313,7 @@ Command UserInput::ParseInput() {
       command.error_log.push_back("Files book propeties are the wrong type");
       return command;
     }
+    command.id = command.command["id"];
     if (!command.command.contains("name") &&
         !command.command.contains("author") &&
         !command.command.contains("pages")) {
@@ -441,6 +452,7 @@ Command UserInput::ParseInput() {
 
       return command;
     }
+    command.id = command.command["id"];
     // Are The Pages Negative
     if (command.command["pages"] < 0) {
       command.error_log.push_back("Pages are negative");

@@ -1,5 +1,7 @@
 #include "Library.hpp"
 
+#include <string>
+
 void Library_MainPart() {
   Library library;
   library.library_intro();

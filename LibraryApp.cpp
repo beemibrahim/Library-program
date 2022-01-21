@@ -10,6 +10,7 @@ void LibraryApp::runLibrary() {
     userinput.GetInput();
 
     Command command = userinput.ParseInput();
+    /*
     // Failed Userinput
     if (command.fail) {
       cout << "\n             Log :             \n\r";
@@ -24,6 +25,7 @@ void LibraryApp::runLibrary() {
               "https://github.com/beemibrahim/Library-program\n\n";
       continue;
     }
+    */
 
     if (command.type == 6) {
       unordered_map<int, Book *>::iterator it = services.m_books.begin();

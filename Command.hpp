@@ -13,9 +13,7 @@ public:
   // Update = 8
   // Patch = 9
   int type;
-  bool fail = false;
   int id;
   json command;
-  std::vector<std::string> error_log;
   std::vector<std::string> warning_log;
 };

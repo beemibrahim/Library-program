@@ -3,7 +3,7 @@
 Command UserInput::ParseInput() {
   Command command = Command();
   string input = this->input;
-
+  vector<string> errors;
   // Create implementation
   if (input[0] == 'c' && input[1] == 'r' && input[2] == 'e' &&
       input[3] == 'a' && input[4] == 't' && input[5] == 'e' &&
@@ -15,59 +15,50 @@ Command UserInput::ParseInput() {
 
     // Does The File Exist
     if (jsonfile.fail()) {
-      command.fail = true;
-
-      command.error_log.push_back("File doesnt exist");
+      errors.push_back("File doesnt exist");
     }
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
-      command.fail = true;
-      command.error_log.push_back("File isnt json");
+      errors.push_back("File isnt json");
     }
     // Check for errors
-    if (command.error_log.size() != 0) {
-      return command;
+    if (errors.size() != 0) {
+      throw errors;
     }
     // Converting file into string
     string raw_json = this->readFileIntoString(sub);
 
     // Is the Json Valid ??
     if (!json::accept(raw_json)) {
-      command.fail = true;
-      command.error_log.push_back("File isnt a valid json File");
-      return command;
+      errors.push_back("File isnt a valid json File");
+      throw errors;
     }
     command.command = json::parse(raw_json);
 
     // Are there three entries (name,author,pages)
     if (command.command.size() != 3) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt have tree entries");
-      return command;
+      errors.push_back("File doesnt have tree entries");
+      throw errors;
     }
     // The Entries are this
     if (!command.command.contains("name") ||
         !command.command.contains("author") ||
         !command.command.contains("pages")) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt contain book propeties");
-      return command;
+      errors.push_back("File doesnt contain book propeties");
+      throw errors;
     }
     // The Entries are of this type
     if (!command.command["name"].is_string() ||
         !command.command["author"].is_string() ||
         !command.command["pages"].is_number_integer()) {
-      command.fail = true;
-      command.error_log.push_back("Files book propeties are the wrong type");
-      return command;
+      errors.push_back("Files book propeties are the wrong type");
+      throw errors;
     }
     // Are The Pages Non Zero , is the name/author empty ??
     if (command.command["pages"] == 0 || command.command["name"] == "" ||
         command.command["author"] == "") {
-      command.fail = true;
-      command.error_log.push_back(
-          "Files book propeties for empty / page number is zero");
-      return command;
+      errors.push_back("Files book propeties for empty / page number is zero");
+      throw errors;
     }
     string author = command.command["author"];
 
@@ -80,11 +71,8 @@ Command UserInput::ParseInput() {
       }
     }
     if (fail == true) {
-      command.fail = true;
-      command.error_log.push_back(
-          "The Author must at least have one letter to be valid");
-
-      return command;
+      errors.push_back("The Author must at least have one letter to be valid");
+      throw errors;
     }
     return command;
   }
@@ -114,17 +102,15 @@ Command UserInput::ParseInput() {
 
     // Does The File Exist
     if (jsonfile.fail()) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt exist");
+      errors.push_back("File doesnt exist");
     }
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
-      command.fail = true;
-      command.error_log.push_back("File isnt json");
+      errors.push_back("File isnt json");
     }
     // Check for errors
-    if (command.error_log.size() != 0) {
-      return command;
+    if (errors.size() != 0) {
+      throw errors;
     }
 
     // Converting file into string
@@ -132,33 +118,29 @@ Command UserInput::ParseInput() {
 
     // Is the Json Valid ??
     if (!json::accept(raw_json)) {
-      command.fail = true;
-      command.error_log.push_back("File isnt a valid json File");
-      return command;
+      errors.push_back("File isnt a valid json File");
+      throw errors;
     }
     command.command = json::parse(raw_json);
 
     // Are there three entries (name,author,pages)
     if (command.command.size() != 3) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt have tree entries");
-      return command;
+      errors.push_back("File doesnt have tree entries");
+      throw errors;
     }
     // The Entries are this
     if (!command.command.contains("name") ||
         !command.command.contains("author") ||
         !command.command.contains("pages")) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt contain book propeties");
+      errors.push_back("File doesnt contain book propeties");
       return command;
     }
     // The Entries are of this type
     if (!command.command["name"].is_string() ||
         !command.command["author"].is_string() ||
         !command.command["pages"].is_number_integer()) {
-      command.fail = true;
-      command.error_log.push_back("Files book propeties are the wrong type");
-      return command;
+      errors.push_back("Files book propeties are the wrong type");
+      throw errors;
     }
 
     return command;
@@ -172,9 +154,8 @@ Command UserInput::ParseInput() {
     // Everything in "string sub" should be a digit :
     for (int i = 0; i < sub.size(); i++) {
       if (sub[i] < 48 || sub[i] > 57) {
-        command.fail = true;
-        command.error_log.push_back("You must give an id of a book");
-        return command;
+        errors.push_back("You must give an id of a book");
+        throw errors;
       }
     }
     command.id = stoi(sub);
@@ -195,51 +176,45 @@ Command UserInput::ParseInput() {
 
     // Does The File Exist
     if (jsonfile.fail()) {
-      command.fail = true;
 
-      command.error_log.push_back("File doesnt exist");
+      errors.push_back("File doesnt exist");
     }
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
-      command.fail = true;
-      command.error_log.push_back("File isnt json");
+      errors.push_back("File isnt json");
     }
     // Check for errors
-    if (command.error_log.size() != 0) {
-      return command;
+    if (errors.size() != 0) {
+      throw errors;
     }
     // Converting file into string
     string raw_json = this->readFileIntoString(sub);
 
     // Is the Json Valid ??
     if (!json::accept(raw_json)) {
-      command.fail = true;
-      command.error_log.push_back("File isnt a valid json File");
-      return command;
+      errors.push_back("File isnt a valid json File");
+      throw errors;
     }
     command.command = json::parse(raw_json);
 
     // Are there three entries (name,author,pages)
     if (command.command.size() != 3) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt have tree entries");
-      return command;
+      errors.push_back("File doesnt have tree entries");
+      throw errors;
     }
     // The Entries are this
     if (!command.command.contains("name") ||
         !command.command.contains("author") ||
         !command.command.contains("pages")) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt contain book propeties");
-      return command;
+      errors.push_back("File doesnt contain book propeties");
+      throw errors;
     }
     // The Entries are of this type
     if (!command.command["name"].is_string() ||
         !command.command["author"].is_string() ||
         !command.command["pages"].is_number_integer()) {
-      command.fail = true;
-      command.error_log.push_back("Files book propeties are the wrong type");
-      return command;
+      errors.push_back("Files book propeties are the wrong type");
+      throw errors;
     }
     if (command.command["name"] == 0 && command.command["author"] == "" &&
         command.command["pages"] == "") {
@@ -257,10 +232,8 @@ Command UserInput::ParseInput() {
     // Everything in "string sub" should be a digit :
     for (int i = 0; i < sub.size(); i++) {
       if (sub[i] < 48 || sub[i] > 57) {
-        command.fail = true;
-        command.error_log.push_back("You must give an id of a book");
-
-        return command;
+        errors.push_back("You must give an id of a book");
+        throw errors;
       }
     }
     command.id = stoi(sub);
@@ -277,75 +250,65 @@ Command UserInput::ParseInput() {
 
     // Does The File Exist
     if (jsonfile.fail()) {
-      command.fail = true;
 
-      command.error_log.push_back("File doesnt exist");
+      errors.push_back("File doesnt exist");
     }
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
-      command.fail = true;
-      command.error_log.push_back("File isnt json");
+      errors.push_back("File isnt json");
     }
     // Check for errors
-    if (command.error_log.size() != 0) {
-      return command;
+    if (errors.size() != 0) {
+      throw errors;
     }
     // Converting file into string
     string raw_json = this->readFileIntoString(sub);
 
     // Is the Json Valid ??
     if (!json::accept(raw_json)) {
-      command.fail = true;
-      command.error_log.push_back("File isnt a valid json File");
-      return command;
+      errors.push_back("File isnt a valid json File");
+      throw errors;
     }
 
     command.command = json::parse(raw_json);
 
     if (!command.command.contains("id") || command.command.size() < 2) {
-      command.error_log.push_back("Patch propeties not specified");
-      command.fail = true;
-      return command;
+      errors.push_back("Patch propeties not specified");
+      throw errors;
     }
 
     if (!command.command["id"].is_number_integer()) {
-      command.fail = true;
-      command.error_log.push_back("Files book propeties are the wrong type");
-      return command;
+      errors.push_back("Files book propeties are the wrong type");
+      throw errors;
     }
     command.id = command.command["id"];
     if (!command.command.contains("name") &&
         !command.command.contains("author") &&
         !command.command.contains("pages")) {
-      command.error_log.push_back("Patch propeties not specified");
-      command.fail = true;
-      return command;
+      errors.push_back("Patch propeties not specified");
+      throw errors;
     }
 
     int exsize = 1;
     if (command.command.contains("name")) {
       if (!command.command["name"].is_string()) {
-        command.fail = true;
-        command.error_log.push_back("Files book propeties are the wrong type");
-        return command;
+        errors.push_back("Files book propeties are the wrong type");
+        throw errors;
       }
       if (command.command["name"] == "") {
-        command.fail = true;
-        command.error_log.push_back("Book propeties are empty");
-        return command;
+        errors.push_back("Book propeties are empty");
+        throw errors;
       }
       exsize += 1;
     }
     if (command.command.contains("author")) {
       if (!command.command["author"].is_string()) {
-        command.fail = true;
-        command.error_log.push_back("Files book propeties are the wrong type");
-        return command;
+        errors.push_back("Files book propeties are the wrong type");
+        throw errors;
       }
       if (command.command["author"] == "") {
-        command.fail = true;
-        command.error_log.push_back("Book propeties are empty");
-        return command;
+        errors.push_back("Book propeties are empty");
+        throw errors;
       }
 
       string author = command.command["author"];
@@ -358,24 +321,21 @@ Command UserInput::ParseInput() {
         }
       }
       if (fail == true) {
-        command.fail = true;
-        command.error_log.push_back(
+        errors.push_back(
             "The Author must at least have one letter to be valid");
-        return command;
+        throw errors;
       }
 
       exsize += 1;
     }
     if (command.command.contains("pages")) {
       if (!command.command["pages"].is_number_integer()) {
-        command.fail = true;
-        command.error_log.push_back("Files book propeties are the wrong type");
-        return command;
+        errors.push_back("Files book propeties are the wrong type");
+        throw errors;
       }
       if (command.command["pages"] <= 0) {
-        command.fail = true;
-        command.error_log.push_back("The number of pages are invalid");
-        return command;
+        errors.push_back("The number of pages are invalid");
+        throw errors;
       }
 
       exsize += 1;
@@ -385,9 +345,8 @@ Command UserInput::ParseInput() {
       command.warning_log.push_back("Use The \"Update\" command instead");
     }
     if (command.command.size() != exsize) {
-      command.error_log.push_back("Patch propeties are invalid");
-      command.fail = true;
-      return command;
+      errors.push_back("Patch propeties are invalid");
+      throw errors;
     }
     return command;
   }
@@ -401,70 +360,62 @@ Command UserInput::ParseInput() {
 
     // Does The File Exist
     if (jsonfile.fail()) {
-      command.fail = true;
 
-      command.error_log.push_back("File doesnt exist");
+      errors.push_back("File doesnt exist");
     }
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
-      command.fail = true;
-      command.error_log.push_back("File isnt json");
+      errors.push_back("File isnt json");
     }
     // Check for errors
-    if (command.error_log.size() != 0) {
-      return command;
+    if (errors.size() != 0) {
+      throw errors;
     }
     // Converting file into string
     string raw_json = this->readFileIntoString(sub);
 
     // Is the Json Valid ??
     if (!json::accept(raw_json)) {
-      command.fail = true;
-      command.error_log.push_back("File isnt a valid json File");
-      return command;
+      errors.push_back("File isnt a valid json File");
+      throw errors;
     }
 
     command.command = json::parse(raw_json);
 
     // Are there four entries (name,author,pages,id)
     if (command.command.size() != 4) {
-      command.fail = true;
-      command.error_log.push_back("File doesnt have four entries");
+      errors.push_back("File doesnt have four entries");
 
-      return command;
+      throw errors;
     }
     // The Entries are this
     if (!command.command.contains("name") ||
         !command.command.contains("author") ||
         !command.command.contains("pages") || !command.command.contains("id")) {
-      command.fail = true;
-      command.error_log.push_back("Update propeties not specified");
+      errors.push_back("Update propeties not specified");
 
-      return command;
+      throw errors;
     }
     // The Entries are of this type
     if (!command.command["name"].is_string() ||
         !command.command["author"].is_string() ||
         !command.command["pages"].is_number_integer() ||
         !command.command["id"].is_number_integer()) {
-      command.fail = true;
-      command.error_log.push_back("Files book propeties are the wrong type");
+      errors.push_back("Files book propeties are the wrong type");
 
-      return command;
+      throw errors;
     }
     command.id = command.command["id"];
     // Are The Pages Negative
     if (command.command["pages"] < 0) {
-      command.error_log.push_back("Pages are negative");
-      command.fail = true;
-      return command;
+      errors.push_back("Pages are negative");
+      throw errors;
     }
     if (command.command["pages"] == 0 || command.command["name"] == "" ||
         command.command["author"] == "") {
-      command.fail = true;
-      command.error_log.push_back("Book Propeties are empty");
+      errors.push_back("Book Propeties are empty");
 
-      return command;
+      throw errors;
     }
     string author = command.command["author"];
     // Are there Letters In Author ??
@@ -476,16 +427,14 @@ Command UserInput::ParseInput() {
       }
     }
     if (fail == true) {
-      command.fail = true;
-      command.error_log.push_back(
-          "The Author must at least have one letter to be valid");
+      errors.push_back("The Author must at least have one letter to be valid");
 
-      return command;
+      throw errors;
     }
     return command;
   }
-  command.fail = true;
-  return command;
+  errors.push_back("Command not found");
+  throw errors;
 }
 
 void UserInput::GetInput(string testing) {

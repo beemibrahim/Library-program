@@ -6,26 +6,22 @@ void LibraryApp::runLibrary() {
   for (;;) {
     this->userinput = UserInput();
     std::cout.flush();
-
+    Command command;
     userinput.GetInput();
-
-    Command command = userinput.ParseInput();
-    /*
-    // Failed Userinput
-    if (command.fail) {
+    try {
+      command = userinput.ParseInput();
+    } catch (const vector<string> &errors) {
       cout << "\n             Log :             \n\r";
       cout << "-----------------------------------\n\r";
 
-      // Failed Log
-      for (int i = 0; i < command.error_log.size(); i++) {
+      for (int i = 0; i < errors.size(); i++) {
         cout << ". ";
-        cout << command.error_log[i] << "\n\r";
+        cout << errors[i] << "\n\r";
       }
       cout << "Command Failed , read my REAMDE.md on github : "
               "https://github.com/beemibrahim/Library-program\n\n";
       continue;
     }
-    */
 
     if (command.type == 6) {
       unordered_map<int, Book *>::iterator it = services.m_books.begin();
@@ -127,7 +123,7 @@ void LibraryApp::runLibrary() {
         cout << "\n             Log :             \n\r";
         cout << "-----------------------------------\n\r";
         cout << ". "
-             << ""
+             << "";
       }
     }
     if (command.type == 4) {
@@ -185,18 +181,20 @@ void LibraryApp::runLibrary() {
       createe.name = command.command["name"];
       createe.author = command.command["author"];
       createe.pages = command.command["pages"];
-      LibSev retu = services.create_book(createe);
-      if (retu.func == true) {
-        // Failed Log
-        for (int i = 0; i < retu.error_log.size(); i++) {
+      Book *retu;
+      try {
+        services.create_book(createe);
+      } catch (vector<string> errors) {
+
+        for (int i = 0; i < errors.size(); i++) {
           cout << ". ";
-          cout << retu.error_log[i] << "\n\r";
+          cout << errors[i] << "\n\r";
         }
         cout << "Command Failed , read my REAMDE.md on github : "
-                "https://github.com/beemibrahim/Library-program\n\n";
+                "https://github.com/beemibrahim/Library-program\n\n\r";
         continue;
       }
-      cout << "Book Successfully Created \n\n\r";
+      cout << "Book Successfully Created\n\n\r";
     }
 
     if (command.type == 2) {

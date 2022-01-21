@@ -1,7 +1,8 @@
 
 #ifndef _LIBRARY_LIBRARY_MANAGER_
 #define _LIBRARY_LIBRARY_MANAGER_
-#include "LibSevCommand.hpp"
+#include "Book.hpp"
+#include <unordered_map>
 #include <vector>
 using namespace std;
 
@@ -12,7 +13,7 @@ public:
   bool validate(const Book &book);
   friend class LibraryServiceTests;
 
-  LibSev create_book(const Book &book);
+  const Book *create_book(const Book &book);
 
   const Book *find_book(unsigned const int &id);
   bool dupchk(const Book &book);
@@ -21,8 +22,8 @@ public:
   find_all_books(const std::string &name = "", const std::string &author = "",
                  unsigned const int &pages = 0);
 
-  LibSev update_book(unsigned const int &id, const Book &book);
-  LibSev patch_book(unsigned const int &id, const Book &book);
+  const Book *update_book(unsigned const int &id, const Book &book);
+  const Book *patch_book(unsigned const int &id, const Book &book);
 
   bool delete_book(unsigned const int &id);
 

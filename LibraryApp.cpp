@@ -107,25 +107,6 @@ void LibraryApp::runLibrary() {
       continue;
     }
 
-    if (command.type == 8) {
-      Book book = Book();
-      if (command.command.contains("name")) {
-        book.name = command.command["name"];
-      }
-      if (command.command.contains("author")) {
-        book.author = command.command["author"];
-      }
-      if (command.command.contains("pages")) {
-        book.pages = command.command["pages"];
-      }
-      const Book *bookr = services.update_book(command.id, book);
-      if (bookr == nullptr) {
-        cout << "\n             Log :             \n\r";
-        cout << "-----------------------------------\n\r";
-        cout << ". "
-             << "";
-      }
-    }
     if (command.type == 4) {
       string input = string();
       // Prompting user if they are sure about the consequenses
@@ -160,9 +141,60 @@ void LibraryApp::runLibrary() {
     cout << "\n             Log :             \n\r";
     cout << "-----------------------------------\n\r";
 
+    if (command.type == 9) {
+      Book book = Book();
+      if (command.command.contains("name")) {
+        book.name = command.command["name"];
+      }
+      if (command.command.contains("author")) {
+        book.author = command.command["author"];
+      }
+      if (command.command.contains("pages")) {
+        book.pages = command.command["pages"];
+      }
+
+      try {
+        services.patch_book(command.id, book);
+      } catch (vector<string> errors) {
+
+        for (int i = 0; i < errors.size(); i++) {
+          cout << ". ";
+          cout << errors[i] << "\n\r";
+        }
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n";
+        continue;
+      }
+      cout << "Book Successfully Patched\n\n\r";
+    }
+
+    if (command.type == 8) {
+      Book book = Book();
+
+      book.name = command.command["name"];
+      book.author = command.command["author"];
+      book.pages = command.command["pages"];
+      try {
+        const Book *bookr = services.update_book(command.id, book);
+      } catch (vector<string> errors) {
+
+        for (int i = 0; i < errors.size(); i++) {
+          cout << ". ";
+          cout << errors[i] << "\n\r";
+        }
+        cout << "Command Failed , read my REAMDE.md on github : "
+                "https://github.com/beemibrahim/Library-program\n\n\r";
+        continue;
+      }
+      cout << "Book Successfully Updated\n\n\r";
+
+      continue;
+    }
+
     if (command.type == 3) {
       if (command.warning_log.size() == 1) {
         cout << "Delete Aborted\n\n\r";
+        continue;
       }
       services.delete_all_books();
       cout << "All Books Successfully Deleted\n\r";
@@ -202,7 +234,7 @@ void LibraryApp::runLibrary() {
       // ID didnt exist
       if (work == false) {
         cout << ". ";
-        cout << "Id doesnt exist";
+        cout << "Id doesnt exist\n\r";
         cout << "Command Failed , read my REAMDE.md on github : "
                 "https://github.com/beemibrahim/Library-program\n\n";
         continue;

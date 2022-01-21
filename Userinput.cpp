@@ -433,7 +433,7 @@ Command UserInput::ParseInput() {
     }
     return command;
   }
-  errors.push_back("Command not found");
+  errors.push_back("Command is Invalid");
   throw errors;
 }
 

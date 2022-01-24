@@ -6,17 +6,23 @@ Command UserInput::ParseInput() {
   vector<string> errors;
   // Create implementation
   if (input[0] == 'c' && input[1] == 'r' && input[2] == 'e' &&
-      input[3] == 'a' && input[4] == 't' && input[5] == 'e' &&
-      input.substr(input.size() - 4) == "json") {
+      input[3] == 'a' && input[4] == 't' && input[5] == 'e') {
     command.type = 1;
     string sub = input.substr(6);
     fstream jsonfile;
     jsonfile.open(sub);
 
+    // Provide a file
+    if (sub.size() <= 4) {
+      errors.push_back("Provide a file");
+      throw errors;
+    }
+
     // Does The File Exist
     if (jsonfile.fail()) {
       errors.push_back("File doesnt exist");
     }
+
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
       errors.push_back("File isnt json");
@@ -37,7 +43,7 @@ Command UserInput::ParseInput() {
 
     // Are there three entries (name,author,pages)
     if (command.command.size() != 3) {
-      errors.push_back("File doesnt have tree entries");
+      errors.push_back("File doesnt have three entries");
       throw errors;
     }
     // The Entries are this
@@ -104,6 +110,7 @@ Command UserInput::ParseInput() {
     if (jsonfile.fail()) {
       errors.push_back("File doesnt exist");
     }
+
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
       errors.push_back("File isnt json");
@@ -179,6 +186,12 @@ Command UserInput::ParseInput() {
 
       errors.push_back("File doesnt exist");
     }
+
+    if (sub.size() <= 4) {
+      errors.push_back("Provide a file");
+      throw errors;
+    }
+
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
       errors.push_back("File isnt json");
@@ -241,18 +254,24 @@ Command UserInput::ParseInput() {
   }
 
   if (input[0] == 'p' && input[1] == 'a' && input[2] == 't' &&
-      input[3] == 'c' && input[4] == 'h' &&
-      input.substr(input.size() - 4) == "json") {
+      input[3] == 'c' && input[4] == 'h') {
     command.type = 9;
-    string sub = input.substr(6);
+    string sub = input.substr(5);
     fstream jsonfile;
     jsonfile.open(sub);
+
+    // Provide a file
+    if (sub.size() <= 4) {
+      errors.push_back("Provide a file");
+      throw errors;
+    }
 
     // Does The File Exist
     if (jsonfile.fail()) {
 
       errors.push_back("File doesnt exist");
     }
+
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
       errors.push_back("File isnt json");
@@ -351,18 +370,24 @@ Command UserInput::ParseInput() {
     return command;
   }
   if (input[0] == 'u' && input[1] == 'p' && input[2] == 'd' &&
-      input[3] == 'a' && input[4] == 't' && input[5] == 'e' &&
-      input.substr(input.size() - 4) == "json") {
+      input[3] == 'a' && input[4] == 't' && input[5] == 'e') {
     command.type = 8;
     string sub = input.substr(6);
     fstream jsonfile;
     jsonfile.open(sub);
+
+    // Provide a file
+    if (sub.size() <= 4) {
+      errors.push_back("Provide a file");
+      throw errors;
+    }
 
     // Does The File Exist
     if (jsonfile.fail()) {
 
       errors.push_back("File doesnt exist");
     }
+
     // Is The File json ??
     if (sub.substr(sub.size() - 4) != "json") {
       errors.push_back("File isnt json");

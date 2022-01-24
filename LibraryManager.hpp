@@ -2,6 +2,10 @@
 #ifndef _LIBRARY_LIBRARY_MANAGER_
 #define _LIBRARY_LIBRARY_MANAGER_
 #include "Book.hpp"
+#include "Command.hpp"
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 using namespace std;
@@ -14,6 +18,7 @@ public:
   friend class LibraryServiceTests;
 
   const Book *create_book(const Book &book);
+  std::stringstream execute_command(Command &command);
 
   const Book *find_book(unsigned const int &id);
   bool dupchk(const Book &book);

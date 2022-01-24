@@ -1,9 +1,12 @@
 #include "Command.hpp"
 #include <fstream>
 #include <gtest/gtest.h>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
 using namespace std;
 class UserInput {
 public:

@@ -1,3 +1,6 @@
+#ifndef _COMMAND
+#define _COMMAND
+
 #include <json.hpp>
 
 using nlohmann::json;
@@ -17,3 +20,5 @@ public:
   json command;
   std::vector<std::string> warning_log;
 };
+
+#endif //_COMMAND

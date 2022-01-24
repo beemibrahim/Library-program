@@ -10,7 +10,7 @@ void LibraryApp::runLibrary() {
     userinput.GetInput();
     try {
       command = userinput.ParseInput();
-    } catch (const vector<string> &errors) {
+    } catch (vector<string> errors) {
       cout << "\n             Log :             \n\r";
       cout << "-----------------------------------\n\r";
 
@@ -23,6 +23,8 @@ void LibraryApp::runLibrary() {
       continue;
     }
 
+    services.execute_command(command);
+    /*
     if (command.type == 6) {
       unordered_map<int, Book *>::iterator it = services.m_books.begin();
       if (services.m_books.size() == 0) {
@@ -64,7 +66,7 @@ void LibraryApp::runLibrary() {
         continue;
       }
       cout << "\n             Book :             \n\r";
-      cout << "-----------------------------------\n\n\r";
+  cout << "-----------------------------------\n\n\r";
       Book *book = services.m_books[1];
       Book *found = (Book *)services.find_book(command.id);
       cout << "name : " << found->name << "\n\n";
@@ -129,7 +131,6 @@ void LibraryApp::runLibrary() {
           cout << "(There was nothing to delete)\n\r";
         }
         cout << "\n\r";
-        continue;
       } else {
         cout << "\n             Log :             \n\r";
         cout << "-----------------------------------\n\r";
@@ -241,5 +242,6 @@ void LibraryApp::runLibrary() {
       }
       cout << "Book Successfully Deleted \n\n\r";
     }
+    */
   }
 }

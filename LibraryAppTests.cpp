@@ -9,23 +9,24 @@ NormalCreate_Non_JsonFile();
 NormalCreate_NonsenseJson();
 InvalidCreate_WrongJsonObj();
 InvalidCreate_WrongJsonType();
-InvalidCreate_NotLettersinAtuhor();
+InvalidCreate_NotLettersinAuthor();
 InvalidCreate_Pagesiszero();
 InvalidCreate_emptyname();
 InvalidCreate_emptyauthor();
 InvalidCreate_duplicate();
 
 
-
-
 . Delete
+
+.Delete Conditions
+
 
 . Find
 
 . Update
 
 
-
+.patch
 
 
 

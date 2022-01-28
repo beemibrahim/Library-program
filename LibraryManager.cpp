@@ -1,7 +1,8 @@
 #include "LibraryManager.hpp"
 
-const Book *LibraryService::create_book(const Book &book) {
-  vector<string> errors;
+void LibraryService::create_book(const Book &book) {
+  std::vector<std::string> errors;
+
   if (!validate(book)) {
     errors.push_back("Book is invalid");
     throw errors;
@@ -10,48 +11,66 @@ const Book *LibraryService::create_book(const Book &book) {
     errors.push_back("Book is a duplicate");
     throw errors;
   }
-  Book *bookt = new Book;
-  bookt->name = book.name;
-  bookt->author = book.author;
-  bookt->pages = book.pages;
-  m_books[this->last_id + 1] = bookt;
-  ++this->last_id;
-  return bookt;
+  // Concatenating stuff
+  std::string idf = std::to_string(last_id + 1);
+  std::string idfi = ".json";
+  std::string idnr = "Books/";
+  std::string newf = idf + idfi;
+  //
+  std::string filepath = idnr + newf;
+  std::ofstream file(filepath);
+  json fileconl;
+  fileconl["name"] = book.name;
+  fileconl["author"] = book.author;
+  fileconl["pages"] = book.pages;
+  std::string dump = fileconl.dump();
+  file << dump;
+  file.close();
+  std::fstream filei;
+  std::string fo = "Information/last_id.txt";
+  filei.open(fo.c_str(), std::ifstream::out | std::ifstream::trunc);
+  last_id += 1;
+  filei << last_id;
+  filei.close();
+
+  m_books[last_id] = book;
 }
 
-const Book *LibraryService::find_book(unsigned const int &id) {
+Book LibraryService::find_book(unsigned const int &id) {
+  std::vector<std::string> errors;
+
   if (m_books.count(id) == 0) {
-    return nullptr;
+    errors.push_back("Id doesnt exist");
+    throw errors;
   }
-  int d = id;
-  Book *booky = m_books[d];
-  return booky;
+
+  return m_books[id];
 }
 
-const std::unordered_map<int, Book *>
+const std::unordered_map<int, Book>
 LibraryService::find_all_books(const std::string &name,
                                const std::string &author,
                                unsigned const int &pages) {
-  unordered_map<int, Book *> answer;
+  std::unordered_map<int, Book> answer;
   int count = 0;
-  unordered_map<int, Book *>::iterator it = m_books.begin();
+  std::unordered_map<int, Book>::iterator it = m_books.begin();
   for (; it != m_books.end(); it++) {
     int valid = 0;
     if (name == "") {
       valid++;
-    } else if (name == it->second->name) {
+    } else if (name == it->second.name) {
       valid++;
     }
 
     if (author == "") {
       valid++;
-    } else if (author == it->second->author) {
+    } else if (author == it->second.author) {
       valid++;
     }
 
     if (pages == 0) {
       valid++;
-    } else if (pages == it->second->pages) {
+    } else if (pages == it->second.pages) {
       valid++;
     }
     if (valid == 3) {
@@ -62,15 +81,17 @@ LibraryService::find_all_books(const std::string &name,
   return answer;
 }
 
-const Book *LibraryService::patch_book(unsigned const int &id,
-                                       const Book &book) {
-  vector<string> errors;
+const Book LibraryService::patch_book(unsigned const int &id,
+                                      const Book &book) {
+  std::vector<std::string> errors;
 
-  Book extr = *m_books[id];
-  if (m_books.count(id) == 0) {
-    errors.push_back("Id doesnt exist");
-    throw errors;
-  }
+  std::string idf = std::to_string(id);
+  std::string idfi = ".json";
+  std::string idnr = "Books/";
+  std::string newf = idf + idfi;
+
+  std::string filepath = idnr + newf;
+  Book extr = m_books[id];
 
   if (book.name != "") {
     extr.name = book.name;
@@ -82,6 +103,10 @@ const Book *LibraryService::patch_book(unsigned const int &id,
     extr.pages = book.pages;
   }
 
+  if (m_books.count(id) == 0) {
+    errors.push_back("Id doesnt exist");
+    throw errors;
+  }
   if (!validate(extr)) {
     errors.push_back("Book is invalid");
     throw errors;
@@ -91,22 +116,31 @@ const Book *LibraryService::patch_book(unsigned const int &id,
     throw errors;
   }
 
-  if (book.name != "") {
-    m_books[id]->name = book.name;
-  }
-  if (book.author != "") {
-    m_books[id]->author = book.author;
-  }
-  if (book.pages > 0) {
-    m_books[id]->pages = book.pages;
-  }
+  m_books[id] = extr;
+  json command;
+  command["name"] = extr.name;
+  command["author"] = extr.author;
+  command["pages"] = extr.pages;
+  std::string dump = command.dump();
+  std::fstream pathcer;
+  pathcer.open(filepath);
+  pathcer.clear();
+  pathcer << dump;
+  pathcer.close();
 
-  return m_books[id];
+  return extr;
 }
 
-const Book *LibraryService::update_book(unsigned const int &id,
-                                        const Book &book) {
-  vector<string> errors;
+const Book LibraryService::update_book(unsigned const int &id,
+                                       const Book &book) {
+  std::vector<std::string> errors;
+
+  std::string idf = std::to_string(id);
+  std::string idfi = ".json";
+  std::string idnr = "Books/";
+  std::string newf = idf + idfi;
+
+  std::string filepath = idnr + newf;
 
   if (m_books.count(id) == 0) {
     errors.push_back("Id doesnt exist");
@@ -121,10 +155,18 @@ const Book *LibraryService::update_book(unsigned const int &id,
     errors.push_back("Book is a duplicate");
     throw errors;
   }
+  m_books[id] = book;
 
-  m_books[id]->name = book.name;
-  m_books[id]->author = book.author;
-  m_books[id]->pages = book.pages;
+  json command;
+  command["name"] = book.name;
+  command["author"] = book.author;
+  command["pages"] = book.pages;
+  std::string dump = command.dump();
+  std::fstream pathcer;
+  pathcer.open(filepath);
+  pathcer.clear();
+  pathcer << dump;
+  pathcer.close();
 
   return m_books[id];
 }
@@ -164,24 +206,29 @@ bool LibraryService::delete_book(unsigned const int &id) {
   if (m_books.count(id) == 0) {
     return false;
   }
-  delete m_books[id];
+  std::string idf = std::to_string(id);
+  std::string idfi = ".json";
+  std::string idnr = "Books/";
+  std::string newf = idf + idfi;
+
+  std::string filepath = idnr + newf;
+
+  remove(filepath.c_str()); // delete file
   m_books.erase(id);
   return true;
 }
 void LibraryService::delete_all_books() {
-  unordered_map<int, Book *>::iterator it = m_books.begin();
-
-  for (; it != m_books.end(); it++) {
-    delete m_books[it->first];
-  }
-
   m_books.erase(m_books.begin(), m_books.end());
+  std::string dir_path = "Books";
+  for (const auto &entry :
+       std::filesystem::recursive_directory_iterator(dir_path))
+    std::filesystem::remove_all(entry.path());
 }
 
 bool LibraryService::dupchk(const Book &book) {
-  unordered_map<int, Book *>::iterator it = m_books.begin();
+  std::unordered_map<int, Book>::iterator it = m_books.begin();
   for (; it != m_books.end(); it++) {
-    if (it->second->name == book.name && it->second->author == book.author) {
+    if (it->second.name == book.name && it->second.author == book.author) {
       return true;
     }
   }
@@ -191,34 +238,36 @@ bool LibraryService::dupchk(const Book &book) {
 void LibraryService::delete_condition(const std::string &name,
                                       const std::string &author,
                                       unsigned const int &pages) {
-  unordered_map<int, Book *>::iterator it = m_books.begin();
-  for (; it != m_books.end();) {
+  std::unordered_map<int, Book>::iterator it = m_books.begin();
+  for (; it != m_books.end(); it++) {
     int valid = 0;
     if (name == "") {
       valid++;
-    } else if (name == it->second->name) {
+    } else if (name == it->second.name) {
       valid++;
     }
 
     if (author == "") {
       valid++;
-    } else if (author == it->second->author) {
+    } else if (author == it->second.author) {
       valid++;
     }
 
     if (pages == 0) {
       valid++;
-    } else if (pages == it->second->pages) {
+    } else if (pages == it->second.pages) {
       valid++;
     }
     if (valid == 3) {
-      int erase = it->first;
-      it++;
-      delete m_books[it->first];
-      m_books.erase(erase);
-      continue;
+      m_books.erase(it->first);
+      std::string idf = std::to_string(it->first);
+      std::string idfi = ".json";
+      std::string idnr = "Books/";
+      std::string newf = idf + idfi;
+
+      std::string filepath = idnr + newf;
+      std::remove(filepath.c_str());
     }
-    it++;
   }
 }
 
@@ -227,12 +276,12 @@ bool LibraryService::dupchk_upd(const Book &book, int id) {
     return false;
   }
 
-  unordered_map<int, Book *>::iterator it = m_books.begin();
+  std::unordered_map<int, Book>::iterator it = m_books.begin();
   for (; it != m_books.end(); it++) {
     if (it->first == id) {
       continue;
     }
-    if (it->second->name == book.name && it->second->author == book.author) {
+    if (it->second.name == book.name && it->second.author == book.author) {
       return true;
     }
   }
@@ -242,15 +291,15 @@ bool LibraryService::dupchk_upd(const Book &book, int id) {
 std::stringstream LibraryService::execute_command(Command &command) {
   std::stringstream stream;
   if (command.type == 6) {
-    unordered_map<int, Book *>::iterator it = m_books.begin();
+    std::unordered_map<int, Book>::iterator it = m_books.begin();
     if (m_books.size() == 0) {
-      cout << "\n             Log :             \n\r";
-      cout << "-----------------------------------\n\r";
+      std::cout << "\n             Log :             \n\r";
+      std::cout << "-----------------------------------\n\r";
 
-      cout << ". ";
-      cout << "No Books are created\n\r";
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n\r";
+      std::cout << ". ";
+      std::cout << "No Books are created\n\r";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n\r";
       stream << "\n             Log :             \n\r";
       stream << "-----------------------------------\n\r";
 
@@ -261,26 +310,26 @@ std::stringstream LibraryService::execute_command(Command &command) {
 
       return stream;
     }
-    cout << "\n             Books :             \n\r";
-    cout << "-----------------------------------\n\n\r";
+    std::cout << "\n             Books :             \n\r";
+    std::cout << "-----------------------------------\n\n\r";
 
     stream << "\n             Books :             \n\r";
     stream << "-----------------------------------\n\n\r";
 
     int num = 1;
     for (; it != m_books.end(); it++) {
-      cout << num << "."
-           << "\n\n\r";
-      Book *book = m_books[it->first];
-      cout << "name : " << book->name << "\n\n";
-      cout << "author : " << book->author << "\n\n";
-      cout << "pages : " << book->pages << "\n\n";
-      cout << "id : " << it->first << "\n\n\n\r";
+      std::cout << num << "."
+                << "\n\n\r";
+      Book book = m_books[it->first];
+      std::cout << "name : " << book.name << "\n\n";
+      std::cout << "author : " << book.author << "\n\n";
+      std::cout << "pages : " << book.pages << "\n\n";
+      std::cout << "id : " << it->first << "\n\n\n\r";
       stream << num << "."
              << "\n\n\r";
-      stream << "name : " << book->name << "\n\n";
-      stream << "author : " << book->author << "\n\n";
-      stream << "pages : " << book->pages << "\n\n";
+      stream << "name : " << book.name << "\n\n";
+      stream << "author : " << book.author << "\n\n";
+      stream << "pages : " << book.pages << "\n\n";
       stream << "id : " << it->first << "\n\n\n\r";
 
       num += 1;
@@ -289,55 +338,54 @@ std::stringstream LibraryService::execute_command(Command &command) {
   }
 
   if (command.type == 5) {
-    if (find_book(command.id) == nullptr) {
-      cout << "\n             Log :             \n\r";
-      cout << "-----------------------------------\n\r";
+    Book book;
+    try {
+      book = find_book(command.id);
+    } catch (std::vector<std::string> errors) {
 
-      cout << ". ";
-      cout << "That Id doesnt Exist\n\r";
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n\r";
+      for (int i = 0; i < errors.size(); i++) {
+        std::cout << ". ";
+        std::cout << errors[i] << "\n\r";
+        stream << ". ";
+        stream << errors[i] << "\n\r";
+      }
+      std::cout << "Command Failed , read my REAMDE.md on github : "
 
-      stream << "\n             Log :             \n\r";
-      stream << "-----------------------------------\n\r";
-
-      stream << ". ";
-      stream << "That Id doesnt Exist\n\r";
+                   "https://github.com/beemibrahim/Library-program\n\n\r";
       stream << "Command Failed , read my REAMDE.md on github : "
                 "https://github.com/beemibrahim/Library-program\n\n\r";
 
       return stream;
     }
-    cout << "\n             Book :             \n\r";
-    cout << "-----------------------------------\n\n\r";
-    Book *book = m_books[1];
-    Book *found = (Book *)find_book(command.id);
-    cout << "name : " << found->name << "\n\n";
-    cout << "author : " << found->author << "\n\n";
-    cout << "pages : " << found->pages << "\n\n";
-    cout << "id : " << command.id << "\n\n\n\r";
+
+    std::cout << "\n             Book :             \n\r";
+    std::cout << "-----------------------------------\n\n\r";
+    std::cout << "name : " << book.name << "\n\n";
+    std::cout << "author : " << book.author << "\n\n";
+    std::cout << "pages : " << book.pages << "\n\n";
+    std::cout << "id : " << command.id << "\n\n\n\r";
 
     stream << "\n             Book :             \n\r";
     stream << "-----------------------------------\n\n\r";
-    stream << "name : " << found->name << "\n\n";
-    stream << "author : " << found->author << "\n\n";
-    stream << "pages : " << found->pages << "\n\n";
+    stream << "name : " << book.name << "\n\n";
+    stream << "author : " << book.author << "\n\n";
+    stream << "pages : " << book.pages << "\n\n";
     stream << "id : " << command.id << "\n\n\n\r";
 
     return stream;
   }
   if (command.type == 7) {
-    unordered_map<int, Book *> arra =
+    std::unordered_map<int, Book> arra =
         find_all_books(command.command["name"], command.command["author"],
                        command.command["pages"]);
     if (arra.size() == 0) {
-      cout << "\n             Log :             \n\r";
-      cout << "-----------------------------------\n\r";
+      std::cout << "\n             Log :             \n\r";
+      std::cout << "-----------------------------------\n\r";
 
-      cout << ". ";
-      cout << "No Book meets those conditions\n\r";
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n\r";
+      std::cout << ". ";
+      std::cout << "No Book meets those conditions\n\r";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n\r";
 
       stream << "\n             Log :             \n\r";
       stream << "-----------------------------------\n\r";
@@ -350,28 +398,28 @@ std::stringstream LibraryService::execute_command(Command &command) {
       return stream;
     }
 
-    unordered_map<int, Book *>::iterator it = arra.begin();
-    cout << "\n             Books :             \n\r";
-    cout << "-----------------------------------\n\n\r";
+    std::unordered_map<int, Book>::iterator it = arra.begin();
+    std::cout << "\n             Books :             \n\r";
+    std::cout << "-----------------------------------\n\n\r";
 
     stream << "\n             Books :             \n\r";
     stream << "-----------------------------------\n\n\r";
 
     int num = 1;
     for (; it != arra.end(); it++) {
-      cout << num << "."
-           << "\n\n\r";
-      Book *book = arra[it->first];
-      cout << "name : " << book->name << "\n\n";
-      cout << "author : " << book->author << "\n\n";
-      cout << "pages : " << book->pages << "\n\n";
-      cout << "id : " << it->first << "\n\n\n\r";
+      std::cout << num << "."
+                << "\n\n\r";
+      Book book = arra[it->first];
+      std::cout << "name : " << book.name << "\n\n";
+      std::cout << "author : " << book.author << "\n\n";
+      std::cout << "pages : " << book.pages << "\n\n";
+      std::cout << "id : " << it->first << "\n\n\n\r";
 
       stream << num << "."
              << "\n\n\r";
-      stream << "name : " << book->name << "\n\n";
-      stream << "author : " << book->author << "\n\n";
-      stream << "pages : " << book->pages << "\n\n";
+      stream << "name : " << book.name << "\n\n";
+      stream << "author : " << book.author << "\n\n";
+      stream << "pages : " << book.pages << "\n\n";
       stream << "id : " << it->first << "\n\n\n\r";
 
       num += 1;
@@ -380,10 +428,10 @@ std::stringstream LibraryService::execute_command(Command &command) {
   }
 
   if (command.type == 4) {
-    string input = string();
+    std::string input = std::string();
     // Prompting user if they are sure about the consequenses
-    cout << "Are You Sure About This ( " << m_books.size()
-         << " books are being deleted ) [Y/n]";
+    std::cout << "Are You Sure About This ( " << m_books.size()
+              << " books are being deleted ) [Y/n]";
 
     stream << "Are You Sure About This ( " << m_books.size()
            << " books are being deleted ) [Y/n]";
@@ -392,30 +440,30 @@ std::stringstream LibraryService::execute_command(Command &command) {
     if (m_books.size() == 0) {
       em = true;
     }
-    getline(cin, input);
-    cout << "\n\r";
+    getline(std::cin, input);
+    std::cout << "\n\r";
     stream << "\n\r";
     if (input == "Y") {
       delete_condition(command.command["name"], command.command["author"],
                        command.command["pages"]);
-      cout << "\n             Log :             \n\r";
-      cout << "-----------------------------------\n\r";
-      cout << m_books.size() << " Books Successfully Deleted\n\r";
+      std::cout << "\n             Log :             \n\r";
+      std::cout << "-----------------------------------\n\r";
+      std::cout << m_books.size() << " Books Successfully Deleted\n\r";
 
       stream << "\n             Log :             \n\r";
       stream << "-----------------------------------\n\r";
       stream << m_books.size() << " Books Successfully Deleted\n\r";
 
       if (em) {
-        cout << "(There was nothing to delete)\n\r";
+        std::cout << "(There was nothing to delete)\n\r";
         stream << "(There was nothing to delete)\n\r";
       }
-      cout << "\n\r";
+      std::cout << "\n\r";
       stream << "\n\r";
     } else {
-      cout << "\n             Log :             \n\r";
-      cout << "-----------------------------------\n\r";
-      cout << "Delete Aborted\n\n\r";
+      std::cout << "\n             Log :             \n\r";
+      std::cout << "-----------------------------------\n\r";
+      std::cout << "Delete Aborted\n\n\r";
 
       stream << "\n             Log :             \n\r";
       stream << "-----------------------------------\n\r";
@@ -425,8 +473,8 @@ std::stringstream LibraryService::execute_command(Command &command) {
     }
   }
 
-  cout << "\n             Log :             \n\r";
-  cout << "-----------------------------------\n\r";
+  std::cout << "\n             Log :             \n\r";
+  std::cout << "-----------------------------------\n\r";
 
   stream << "\n             Log :             \n\r";
   stream << "-----------------------------------\n\r";
@@ -445,24 +493,24 @@ std::stringstream LibraryService::execute_command(Command &command) {
 
     try {
       patch_book(command.id, book);
-    } catch (vector<string> errors) {
+    } catch (std::vector<std::string> errors) {
 
       for (int i = 0; i < errors.size(); i++) {
-        cout << ". ";
-        cout << errors[i] << "\n\r";
+        std::cout << ". ";
+        std::cout << errors[i] << "\n\r";
 
         stream << ". ";
         stream << errors[i] << "\n\r";
       }
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n";
 
       stream << "Command Failed , read my REAMDE.md on github : "
                 "https://github.com/beemibrahim/Library-program\n\n";
 
       return stream;
     }
-    cout << "Book Successfully Patched\n\n\r";
+    std::cout << "Book Successfully Patched\n\n\r";
 
     stream << "Book Successfully Patched\n\n\r";
   }
@@ -474,23 +522,23 @@ std::stringstream LibraryService::execute_command(Command &command) {
     book.author = command.command["author"];
     book.pages = command.command["pages"];
     try {
-      const Book *bookr = update_book(command.id, book);
-    } catch (vector<string> errors) {
+      Book bookr = update_book(command.id, book);
+    } catch (std::vector<std::string> errors) {
 
       for (int i = 0; i < errors.size(); i++) {
-        cout << ". ";
-        cout << errors[i] << "\n\r";
+        std::cout << ". ";
+        std::cout << errors[i] << "\n\r";
         stream << ". ";
         stream << errors[i] << "\n\r";
       }
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n\r";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n\r";
       stream << "Command Failed , read my REAMDE.md on github : "
                 "https://github.com/beemibrahim/Library-program\n\n\r";
 
       return stream;
     }
-    cout << "Book Successfully Updated\n\n\r";
+    std::cout << "Book Successfully Updated\n\n\r";
     stream << "Book Successfully Updated\n\n\r";
 
     return stream;
@@ -498,21 +546,21 @@ std::stringstream LibraryService::execute_command(Command &command) {
 
   if (command.type == 3) {
     if (command.warning_log.size() == 1) {
-      cout << "Delete Aborted\n\n\r";
+      std::cout << "Delete Aborted\n\n\r";
       stream << "Delete Aborted\n\n\r";
 
       return stream;
     }
     delete_all_books();
-    cout << "All Books Successfully Deleted\n\r";
+    std::cout << "All Books Successfully Deleted\n\r";
     stream << "All Books Successfully Deleted\n\r";
 
     if (m_books.size() == 0) {
-      cout << "(There was nothing to delete)\n\n\r";
+      std::cout << "(There was nothing to delete)\n\n\r";
       stream << "(There was nothing to delete)\n\n\r";
 
     } else {
-      cout << "\n\r";
+      std::cout << "\n\r";
       stream << "\n\r";
     }
 
@@ -528,22 +576,22 @@ std::stringstream LibraryService::execute_command(Command &command) {
     Book *retu;
     try {
       create_book(createe);
-    } catch (vector<string> errors) {
+    } catch (std::vector<std::string> errors) {
 
       for (int i = 0; i < errors.size(); i++) {
-        cout << ". ";
-        cout << errors[i] << "\n\r";
+        std::cout << ". ";
+        std::cout << errors[i] << "\n\r";
         stream << ". ";
         stream << errors[i] << "\n\r";
       }
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n\r";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n\r";
       stream << "Command Failed , read my REAMDE.md on github : "
                 "https://github.com/beemibrahim/Library-program\n\n\r";
 
       return stream;
     }
-    cout << "Book Successfully Created\n\n\r";
+    std::cout << "Book Successfully Created\n\n\r";
     stream << "Book Successfully Created\n\n\r";
     return stream;
   }
@@ -552,10 +600,10 @@ std::stringstream LibraryService::execute_command(Command &command) {
     bool work = delete_book(command.id);
     // ID didnt exist
     if (work == false) {
-      cout << ". ";
-      cout << "Id doesnt exist\n\r";
-      cout << "Command Failed , read my REAMDE.md on github : "
-              "https://github.com/beemibrahim/Library-program\n\n";
+      std::cout << ". ";
+      std::cout << "Id doesnt exist\n\r";
+      std::cout << "Command Failed , read my REAMDE.md on github : "
+                   "https://github.com/beemibrahim/Library-program\n\n";
       stream << ". ";
       stream << "Id doesnt exist\n\r";
       stream << "Command Failed , read my REAMDE.md on github : "
@@ -563,8 +611,51 @@ std::stringstream LibraryService::execute_command(Command &command) {
 
       return stream;
     }
-    cout << "Book Successfully Deleted \n\n\r";
+    std::cout << "Book Successfully Deleted \n\n\r";
     stream << "Book Successfully Deleted \n\n\r";
   }
   return stream;
+}
+
+std::string LibraryService::readFileIntoString(const std::string &path) {
+  std::ifstream input_file(path);
+  if (!input_file.is_open()) {
+    std::cerr << "Could not open the file - '" << path << "'" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  return std::string((std::istreambuf_iterator<char>(input_file)),
+                     std::istreambuf_iterator<char>());
+}
+
+void LibraryService::extract() {
+  std::unordered_map<int, Book> answer;
+  std::stringstream streamser;
+  const std::filesystem::path Books{"Books"};
+  for (auto &p : std::filesystem::directory_iterator(Books)) {
+    // Getting contents of the file
+    std::stringstream streamser;
+    streamser << p;
+    std::string filename = streamser.str(); // "Books/<filename>"
+    filename = filename.substr(1, filename.size() - 2);
+    int pos = filename.find(".");
+    std::string ids = filename.substr(6, pos);
+    int id = stoi(ids);
+    std::string filecon = readFileIntoString(filename);
+    json command = json::parse(filecon);
+
+    // Extracting
+    Book book;
+    book.name = command["name"];
+    book.author = command["author"];
+    book.pages = command["pages"];
+    answer[id] = book;
+
+    // Comparing to find conditions
+  }
+  std::fstream filey;
+  filey.open("Information/last_id.txt");
+  std::string su = readFileIntoString("Information/last_id.txt");
+  int id = stoi(su);
+  last_id = id;
+  m_books = answer;
 }

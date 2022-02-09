@@ -1,4 +1,4 @@
-#include "LibraryService.hpp"
+#include "Library_DatabaseService.hpp"
 #include "Userinput.hpp"
 #include <exception>
 
@@ -9,11 +9,11 @@ struct ExtractRet {
 
 class LibraryApp {
 public:
-  void runLibrary(string config);
+  void runLibrary();
 
 private:
   UserInput userinput;
-  LibraryService *service;
+  LibraryDatabaseService *service;
   // for File Service
   ExtractRet extract();
 };

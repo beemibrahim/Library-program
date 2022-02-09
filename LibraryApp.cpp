@@ -1,22 +1,8 @@
 #include "LibraryApp.hpp"
-
-#include "LibraryFileService.hpp"
-#include "LibraryService.hpp"
-#include "Library_DatabaseService.hpp"
-#include "Library_MemoryService.hpp"
-void LibraryApp::runLibrary(string config) {
+void LibraryApp::runLibrary() {
   bool tru = false;
   Book *retr;
-
-  if (config == "m") {
-    service = new LibraryMemoryService();
-  } else if (config == "f") {
-    service = new LibraryFileService();
-    ExtractRet extr = extract();
-    service->import(extr.books, extr.last_id);
-  } else {
-    service = new LibraryDatabaseService();
-  }
+  service = new LibraryDatabaseService();
 
   for (;;) {
     this->userinput = UserInput();

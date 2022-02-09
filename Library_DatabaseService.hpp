@@ -1,9 +1,10 @@
-#include "LibraryService.hpp"
+#include "Book.hpp"
+#include "Command.hpp"
 #include <iostream>
 #include <sqlite/connection.hpp>
 #include <sqlite/execute.hpp>
 #include <sqlite/query.hpp>
-class LibraryDatabaseService : public LibraryService {
+class LibraryDatabaseService {
 
 public:
   bool validate(const Book &book);

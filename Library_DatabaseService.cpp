@@ -140,6 +140,12 @@ const Book *LibraryDatabaseService::patch_book(unsigned const int &id,
   q % (int)id;
   q();
   boost::shared_ptr<sqlite::result> result = q.get_result();
+
+  if (result->get_string(1) == "NULL") {
+    errors.push_back("Id doesnt exist");
+    throw errors;
+  }
+
   extr.name = result->get_string(1);
   extr.author = result->get_string(2);
   extr.pages = result->get_int(3);
@@ -177,7 +183,21 @@ const Book *LibraryDatabaseService::patch_book(unsigned const int &id,
 
 const Book *LibraryDatabaseService::update_book(unsigned const int &id,
                                                 const Book &book) {
+  std::vector<std::string> errors;
   sqlite::connection con("data/library.db");
+
+  if (find_book(id) == nullptr) {
+    errors.push_back("Id doesnt exist");
+    throw errors;
+  }
+  if (!validate(book)) {
+    errors.push_back("Book is invalid");
+    throw errors;
+  }
+  if (dupchk_upd(book, id)) {
+    errors.push_back("Book is a duplicate");
+    throw errors;
+  }
 
   sqlite::execute ins(
       con,
@@ -232,10 +252,24 @@ bool LibraryDatabaseService::delete_book(unsigned const int &id) {
   ins();
   return true;
 }
+
+bool LibraryDatabaseService::are_existing_books() {
+  sqlite::connection con("data/library.db");
+
+  sqlite::query q(con, "SELECT * FROM library limit 1;");
+  boost::shared_ptr<sqlite::result> result = q.get_result();
+
+  bool em = false;
+  if (!result->next_row())
+    em = true;
+
+  return em;
+}
+
 void LibraryDatabaseService::delete_all_books() {
   sqlite::connection con("data/library.db");
-  sqlite::execute ins(con, "DELETE FROM library;");
-  ins();
+  sqlite::execute del(con, "delete from library;");
+  del();
 }
 
 bool LibraryDatabaseService::dupchk(const Book &book) {
@@ -312,10 +346,10 @@ bool LibraryDatabaseService::dupchk_upd(const Book &book, int id) {
   sqlite::connection con("data/library.db");
   sqlite::query q(con, "SELECT * FROM library where name = ? AND author = ?;");
   int al = 0;
-  q % book.name % book.author % (int)book.pages;
+  q % book.name % book.author;
   q();
   boost::shared_ptr<sqlite::result> result = q.get_result();
-  if (result->get_row_count() != 1) {
+  if (result->get_string(1) == "NULL") {
     return false;
   }
 
@@ -596,24 +630,16 @@ std::stringstream LibraryDatabaseService::execute_command(Command &command) {
   }
 
   if (command.type == 3) {
-    sqlite::connection con("data/library.db");
-
-    sqlite::query q(con, "SELECT * FROM library;");
-    boost::shared_ptr<sqlite::result> result = q.get_result();
-
     if (command.warning_log.size() == 1) {
       std::cout << "Delete Aborted\n\n\r";
       stream << "Delete Aborted\n\n\r";
 
       return stream;
     }
-    bool em = false;
-    if (!result->next_row())
-      em = true;
     delete_all_books();
     std::cout << "All Books Successfully Deleted\n\r";
     stream << "All Books Successfully Deleted\n\r";
-    if (em) {
+    if (!are_existing_books()) {
       std::cout << "(There was nothing to delete)\n\n\r";
       stream << "(There was nothing to delete)\n\n\r";
 

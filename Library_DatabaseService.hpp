@@ -4,6 +4,7 @@
 #include <sqlite/execute.hpp>
 #include <sqlite/query.hpp>
 class LibraryDatabaseService : public LibraryService {
+  bool are_existing_books();
 
 public:
   bool validate(const Book &book);

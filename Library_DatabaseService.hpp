@@ -1,15 +1,19 @@
-#include "LibraryService.hpp"
+#include "Book.hpp"
+#include <fstream>
 #include <iostream>
 #include <sqlite/connection.hpp>
 #include <sqlite/execute.hpp>
 #include <sqlite/query.hpp>
-class LibraryDatabaseService : public LibraryService {
-  bool are_existing_books();
+#include <sstream>
+#include <string>
+#include <unordered_map>
+
+class LibraryDatabaseService {
+  int last_id;
 
 public:
   bool validate(const Book &book);
-  const Book *create_book(const Book &book);
-  std::stringstream execute_command(Command &command);
+  const Bookwid *create_book(const Book &book);
 
   const Book *find_book(unsigned const int &id);
   bool dupchk(const Book &book);
@@ -17,6 +21,7 @@ public:
   const std::unordered_map<int, Book *>
   find_all_books(const std::string &name = "", const std::string &author = "",
                  unsigned const int &pages = 0);
+  bool are_existing_books();
 
   const Book *update_book(unsigned const int &id, const Book &book);
   const Book *patch_book(unsigned const int &id, const Book &book);
@@ -28,5 +33,5 @@ public:
                         unsigned const int &pages = 0);
 
   void delete_all_books();
-  void import(std::unordered_map<int, Book *> library, int id);
+  void import();
 };

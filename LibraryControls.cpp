@@ -80,18 +80,18 @@ void Handler::find_all_book_handler(const shared_ptr<Session> session,
   std::unordered_map<int, Book *> m_books = service.find_all_books("", "", 0);
   std::unordered_map<int, Book *>::iterator it = m_books.begin();
   std::stringstream streamy;
-  ordered_json emptyAe = ordered_json::array();
+  std::vector<ordered_json> ret;
   for (; it != m_books.end(); it++) {
     ordered_json object;
     object["name"] = it->second->name;
     object["author"] = it->second->author;
     object["pages"] = it->second->pages;
     object["id"] = it->first;
-    string dump = object.dump(0);
-    streamy << dump << "\n\n";
+    ret.push_back(object);
   }
-  string print = streamy.str();
-  session->close(200, print);
+  ordered_json print(ret);
+  string dump = print.dump();
+  session->close(200, dump);
 }
 
 void Handler::delete_all_book_handler(const shared_ptr<Session> session,
